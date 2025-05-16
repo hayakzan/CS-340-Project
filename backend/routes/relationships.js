@@ -1,67 +1,84 @@
+// backend/routes/relationships.js
 const express = require('express');
-const router = express.Router();
-const db = require('../db-connector');
+const router  = express.Router();
+const db      = require('../db-connector');
 
-// CREATE a new relationship
+// CREATE relationship
+// POST /relationships
 router.post('/', async (req, res) => {
-  const { user_id, name, type, status, started_at } = req.body;
+  const { person_id, rel_type, status, started_at, end_at, notes } = req.body;
   try {
-    await db.query(
-      `INSERT INTO relationships (user_id, name, type, status, started_at)
-       VALUES (?, ?, ?, ?, ?)`,
-      [user_id, name, type, status, started_at]
+    const [result] = await db.query(
+      `INSERT INTO relationships
+         (person_id, rel_type, status, started_at, ended_at, notes)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [person_id, rel_type, status, started_at || null, end_at || null, notes || null]
     );
-    res.status(201).send('Relationship created.');
+    res.status(201).json({ relationship_id: result.insertId });
   } catch (err) {
     console.error(err);
     res.status(500).send('Failed to create relationship.');
   }
 });
 
-// READ all relationships or by id this isnt a secure route but its fine for school
+// READ all (or by person_id)
+// GET /relationships?person_id=…
 router.get('/', async (req, res) => {
   try {
     const { person_id } = req.query;
-    const query = person_id
-      ? 'SELECT * FROM relationships WHERE person_id = ?'
-      : 'SELECT * FROM relationships';
-    const params = person_id ? [person_id] : [];
-    const [rows] = await db.query(query, params);
-    res.status(200).json(rows);
+    let sql = `SELECT * FROM relationships`;
+    const params = [];
+    if (person_id) {
+      sql += ` WHERE person_id = ?`;
+      params.push(person_id);
+    }
+    const [rows] = await db.query(sql, params);
+    res.json(rows);
   } catch (err) {
     console.error(err);
     res.status(500).send('Failed to fetch relationships.');
   }
 });
 
-
-// UPDATE a relationship
+// UPDATE relationship
+// PUT /relationships/:id
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, type, status, started_at } = req.body;
+  const { rel_type, status, started_at, end_at, notes } = req.body;
   try {
-    await db.query(
+    const [result] = await db.query(
       `UPDATE relationships
-       SET name = ?, type = ?, status = ?, started_at = ?
+         SET rel_type   = ?,
+             status     = ?,
+             started_at = ?,
+             ended_at   = ?,
+             notes      = ?
        WHERE relationship_id = ?`,
-      [name, type, status, started_at, id]
+      [rel_type, status, started_at || null, end_at || null, notes || null, id]
     );
-    res.status(200).send('Relationship updated.');
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Relationship not found');
+    }
+    res.sendStatus(204);
   } catch (err) {
     console.error(err);
     res.status(500).send('Failed to update relationship.');
   }
 });
 
-// DELETE a relationship
+// DELETE relationship
+// DELETE /relationships/:id
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    await db.query(
+    const [result] = await db.query(
       `DELETE FROM relationships WHERE relationship_id = ?`,
       [id]
     );
-    res.status(200).send('Relationship deleted.');
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Relationship not found');
+    }
+    res.sendStatus(204);
   } catch (err) {
     console.error(err);
     res.status(500).send('Failed to delete relationship.');

@@ -1,75 +1,87 @@
+// backend/routes/relationshipEvents.js
 const express = require('express');
-const router = express.Router();
-const db = require('../db-connector');
+const router  = express.Router();
+const db      = require('../db-connector');
 
-// CREATE a new event
+// CREATE event
+// POST /events
 router.post('/', async (req, res) => {
-  const { relationship_id, title, description, occurred_at } = req.body;
+  const { relationship_id, event_type, event_desc, event_date } = req.body;
   try {
-    await db.query(
-      `INSERT INTO relationship_events (relationship_id, title, description, occurred_at)
+    const [result] = await db.query(
+      `INSERT INTO relationship_events
+         (relationship_id, event_type, event_desc, event_date)
        VALUES (?, ?, ?, ?)`,
-      [relationship_id, title, description, occurred_at]
+      [relationship_id, event_type, event_desc || null, event_date]
     );
-    res.status(201).send('Event created.');
+    res.status(201).json({ rel_event_id: result.insertId });
   } catch (err) {
     console.error(err);
     res.status(500).send('Failed to create event.');
   }
 });
 
-// READ all events
+// READ all (or by person_id)
+// GET /events?person_id=…
 router.get('/', async (req, res) => {
   try {
     const { person_id } = req.query;
-
-    let query = `
-      SELECT e.* FROM relationship_events e
-      JOIN relationships r ON e.relationship_id = r.relationship_id
+    let sql = `
+      SELECT e.*
+        FROM relationship_events AS e
+        JOIN relationships    AS r
+          ON e.relationship_id = r.relationship_id
     `;
     const params = [];
-
     if (person_id) {
-      query += ' WHERE r.person_id = ?';
+      sql += ` WHERE r.person_id = ?`;
       params.push(person_id);
     }
-
-    const [rows] = await db.query(query, params);
-    res.status(200).json(rows);
+    const [rows] = await db.query(sql, params);
+    res.json(rows);
   } catch (err) {
     console.error(err);
     res.status(500).send('Failed to fetch events.');
   }
 });
 
-
-// UPDATE an event
+// UPDATE event
+// PUT /events/:id
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { title, description, occurred_at } = req.body;
+  const { event_type, event_desc, event_date } = req.body;
   try {
-    await db.query(
+    const [result] = await db.query(
       `UPDATE relationship_events
-       SET title = ?, description = ?, occurred_at = ?
-       WHERE event_id = ?`,
-      [title, description, occurred_at, id]
+         SET event_type = ?,
+             event_desc = ?,
+             event_date = ?
+       WHERE rel_event_id = ?`,
+      [event_type, event_desc || null, event_date, id]
     );
-    res.status(200).send('Event updated.');
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Event not found');
+    }
+    res.sendStatus(204);
   } catch (err) {
     console.error(err);
     res.status(500).send('Failed to update event.');
   }
 });
 
-// DELETE an event
+// DELETE event
+// DELETE /events/:id
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    await db.query(
-      `DELETE FROM relationship_events WHERE event_id = ?`,
+    const [result] = await db.query(
+      `DELETE FROM relationship_events WHERE rel_event_id = ?`,
       [id]
     );
-    res.status(200).send('Event deleted.');
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Event not found');
+    }
+    res.sendStatus(204);
   } catch (err) {
     console.error(err);
     res.status(500).send('Failed to delete event.');

@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0',
-    port: 4002,
+    port: 4003,
     strictPort: true,
     proxy: {
       // proxy all of your CRUD endpoints to :5180

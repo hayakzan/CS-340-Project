@@ -6,10 +6,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0',
-    port: 4003,
+    // port: 4003,
+    port: 3000,
     strictPort: true,
     proxy: {
-      // proxy all of your CRUD endpoints to :5181
       '/users':             { target: 'http://localhost:5181', changeOrigin: true },
       '/people':            { target: 'http://localhost:5181', changeOrigin: true },
       '/relationships':     { target: 'http://localhost:5181', changeOrigin: true },
@@ -18,4 +18,4 @@ export default defineConfig({
       '/relationship-tags': { target: 'http://localhost:5181', changeOrigin: true },
     }
   }
-})
+});

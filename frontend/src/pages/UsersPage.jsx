@@ -38,7 +38,6 @@ export default function UsersPage() {
     fetchUsers();
   }
 
-  // UPDATED: prompt before delete
   async function handleDelete(id) {
     if (!window.confirm('Delete this user and all related data?')) {
       return;

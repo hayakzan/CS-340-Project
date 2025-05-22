@@ -21,6 +21,7 @@ export default function PersonDetailsPage() {
     rel_type:   '',
     status:     'Active',
     started_at: '',
+    ended_at:   '',    
     notes:      ''
   });
 
@@ -30,6 +31,7 @@ export default function PersonDetailsPage() {
     rel_type:   '',
     status:     'Active',
     started_at: '',
+    ended_at:   '',
     notes:      ''
   });
 
@@ -107,6 +109,7 @@ export default function PersonDetailsPage() {
         rel_type:   newRel.rel_type,
         status:     newRel.status,
         started_at: newRel.started_at || null,
+        ended_at:   newRel.ended_at   || null, 
         notes:      newRel.notes || null
       })
     });
@@ -119,6 +122,7 @@ export default function PersonDetailsPage() {
       rel_type:   r.rel_type,
       status:     r.status,
       started_at: r.started_at?.slice(0,10) || '',
+      ended_at:   r.ended_at?.slice(0,10)   || '',
       notes:      r.notes || ''
     });
   }
@@ -128,16 +132,24 @@ export default function PersonDetailsPage() {
   function handleChangeEditRel(e) {
     setEditRel(r => ({ ...r, [e.target.name]: e.target.value }));
   }
+  
   async function submitEditRel(e) {
     e.preventDefault();
     await fetch(`/relationships/${editRelId}`, {
-      method:'PUT',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify(editRel)
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        rel_type:   editRel.rel_type,
+        status:     editRel.status,
+        started_at: editRel.started_at || null,
+        ended_at:   editRel.ended_at   || null,
+        notes:      editRel.notes      || null
+      })
     });
     setEditRelId(null);
-    reloadRels();
+    reloadRels(); 
   }
+
   async function deleteRel(id) {
     if (!window.confirm('Delete this relationship?')) return;
     await fetch(`/relationships/${id}`, { method:'DELETE' });
@@ -259,11 +271,19 @@ export default function PersonDetailsPage() {
             <option>Idle</option>
             <option>Inactive</option>
           </select>
+
           <input
             name="started_at"
             type="date"
             value={newRel.started_at}
             onChange={handleChangeNewRel}
+          />
+          <input
+            name="ended_at"
+            type="date"
+            value={newRel.ended_at}
+            onChange={handleChangeNewRel}
+            placeholder="Ended at"
           />
           <input
             name="notes"
@@ -298,6 +318,12 @@ export default function PersonDetailsPage() {
                           name="started_at"
                           type="date"
                           value={editRel.started_at}
+                          onChange={handleChangeEditRel}
+                        />
+                        <input
+                          name="ended_at"
+                          type="date"
+                          value={editRel.ended_at}
                           onChange={handleChangeEditRel}
                         />
                         <input

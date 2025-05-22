@@ -14,7 +14,6 @@ export default function PersonFormPage() {
     gender: ''
   });
 
-  // If we have a personId, fetch existing data to populate the form
   useEffect(() => {
     if (!personId) return;
     fetch(`/people?people_id=${personId}`)
@@ -33,12 +32,10 @@ export default function PersonFormPage() {
       });
   }, [personId]);
 
-  // Handle form changes
   function handleChange(e) {
     setForm(f => ({ ...f, [e.target.name]: e.target.value }));
   }
 
-  // On submit: POST for new, PUT for edit
   async function handleSubmit(e) {
     e.preventDefault();
 

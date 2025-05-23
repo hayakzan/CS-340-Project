@@ -10,6 +10,6 @@ DROP PROCEDURE IF EXISTS DeleteSamplePlayer;
 DELIMITER //
 CREATE PROCEDURE DeleteSamplePlayer()
 BEGIN
-    DELETE FROM people WHERE name = 'David Lee';
+    DELETE FROM users WHERE name = 'Alex Ode';
 END //
 DELIMITER ;

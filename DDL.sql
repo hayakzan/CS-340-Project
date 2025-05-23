@@ -5,7 +5,6 @@
 */
 
 SET FOREIGN_KEY_CHECKS=0;
-SET AUTOCOMMIT = 0;
 
 DROP TABLE IF EXISTS relationship_tags;
 DROP TABLE IF EXISTS tags;
@@ -136,3 +135,5 @@ VALUES
   (1, 1),  -- David Lee tagged “casual”
   (2, 2),  -- Ricardo Havi tagged “close”
   (3, 3);  -- Priya Polat tagged “peripheral”
+
+COMMIT;

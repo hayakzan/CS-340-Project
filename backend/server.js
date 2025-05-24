@@ -25,7 +25,7 @@ const relationshipsRoutes = require('./routes/relationships');
 const relationshipEventsRoutes = require('./routes/relationshipEvents');
 const tagsRoutes = require('./routes/tags');
 const relationshipTagsRoutes = require('./routes/relationshipTags');
-const resetRoutes = require('./routes/reset');
+// const resetRoutes = require('./routes/reset');
 
 // Routes
 app.use('/people', peopleRoutes);
@@ -40,7 +40,7 @@ app.get('/', async (req, res) => {
   res.status(200).json(rows);
 });
 
-app.get('/bsg-people/delete-sample-user', async function (req, res) {
+app.get('/users/delete-sample-user', async function (req, res) {
     try {
         const query1 = 'CALL DeleteSampleUser();';
       await db.query(query1);
@@ -50,7 +50,7 @@ app.get('/bsg-people/delete-sample-user', async function (req, res) {
       res.status(500).send("An error occurred while executing the PL/SQL.");
     }
 });
-app.use('/', resetRoutes);
+// app.use('/', resetRoutes);
 
 app.listen(PORT, () => {
     console.log(`Backend running at http://localhost:5182`);

@@ -40,7 +40,7 @@ app.get('/', async (req, res) => {
   res.status(200).json(rows);
 });
 
-app.get('/users/3', async function (req, res) {
+app.get('/users/delete-sample-user', async function (req, res) {
     try {
         const query1 = 'CALL DeleteSampleUser();';
       await db.query(query1);

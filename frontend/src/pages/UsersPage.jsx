@@ -1,18 +1,16 @@
-// frontend/src/pages/UsersPage.jsx
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function UsersPage() {
   const [users, setUsers] = useState([]);
   const [form, setForm] = useState({
-    name:     '',
+    name: '',
     username: '',
-    dob:      '',
-    gender:   ''
+    dob: '',
+    gender: ''
   });
   const navigate = useNavigate();
 
-  // fetch the list
   const fetchUsers = () =>
     fetch('/users')
       .then(res => res.json())
@@ -39,9 +37,7 @@ export default function UsersPage() {
   }
 
   async function handleDelete(id) {
-    if (!window.confirm('Delete this user and all related data?')) {
-      return;
-    }
+    if (!window.confirm('Delete this user and all related data?')) return;
     await fetch(`/users/${id}`, { method: 'DELETE' });
     fetchUsers();
   }
@@ -50,14 +46,40 @@ export default function UsersPage() {
     navigate(`/users/${id}/edit`);
   }
 
+  async function handleResetAll() {
+    if (!window.confirm('Are you sure you want to reset all data?')) return;
+    try {
+      const res = await fetch('/reset-all');
+      const data = await res.json();
+      alert(data.message);
+      fetchUsers();
+    } catch (err) {
+      console.error(err);
+      alert('An error occurred during reset.');
+    }
+  }
+
+  async function handleDeleteSamplePlayer() {
+    if (!window.confirm('Delete the sample player (Alex Ode)?')) return;
+    try {
+      const res = await fetch('/delete-sample-player');
+      const data = await res.json();
+      alert(data.message);
+      fetchUsers();
+    } catch (err) {
+      console.error(err);
+      alert('An error occurred during delete.');
+    }
+  }
+
   return (
     <div>
       <h2>Select a User</h2>
       <div>
-  <a href="/reset-all" class="button">Reset All Data</a>
-  <br />
-  <a href="/delete-sample-user" class="button">Delete Sample User</a>
-</div>
+        <button className="button" onClick={handleResetAll}>Reset All Data</button>
+        <br />
+        <button className="button" onClick={handleDeleteSamplePlayer}>Delete Sample Player</button>
+      </div>
 
       <form onSubmit={handleAdd} style={{ marginBottom: '1em' }}>
         <input

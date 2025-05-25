@@ -42,7 +42,7 @@ app.get('/', async (req, res) => {
   const [rows] = await db.query('SELECT * FROM users LIMIT 1');
   res.status(200).json(rows);
 });
-app.use('/', resetRoutes);
+app.use('/', reset);
 
 app.listen(PORT, () => {
     console.log(`Backend running at http://classwork.engr.oregonstate.edu:${PORT}`);

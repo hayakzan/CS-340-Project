@@ -4,12 +4,10 @@
     Last Updated: 05/22/2025
 */
 
--- Drop procedure if it exists
-DROP PROCEDURE IF EXISTS DeleteSampleUser;
-
 DELIMITER //
-CREATE PROCEDURE DeleteSampleUser()
+CREATE PROCEDURE DeleteSamplePlayer()
 BEGIN
-    DELETE FROM users WHERE name = 'Alex Ode';
+    DELETE FROM players WHERE name = 'Alex Ode';
 END //
 DELIMITER ;
+

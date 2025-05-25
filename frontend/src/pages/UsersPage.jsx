@@ -12,14 +12,11 @@ export default function UsersPage() {
   const navigate = useNavigate();
 
   const fetchUsers = () =>
-    fetch('/users')
+    fetch('http://classwork.engr.oregonstate.edu:5183/users')
       .then(res => res.json())
       .then(setUsers)
       .catch(console.error);
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -27,7 +24,7 @@ export default function UsersPage() {
 
   async function handleAdd(e) {
     e.preventDefault();
-    await fetch('/users', {
+    await fetch('http://classwork.engr.oregonstate.edu:5183/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
@@ -37,44 +34,50 @@ export default function UsersPage() {
   }
 
   async function handleDelete(id) {
-    if (!window.confirm('Delete this user and all related data?')) return;
-    await fetch(`/users/${id}`, { method: 'DELETE' });
+    if (!window.confirm('Delete this user and all related data?')) {
+      return;
+    }
+    await fetch(`http://classwork.engr.oregonstate.edu:5183/users/${id}`, { method: 'DELETE' });
+
     fetchUsers();
   }
 
   function handleEdit(id) {
     navigate(`/users/${id}/edit`);
   }
-
-  // NEW: call reset via fetch() and handle JSON
-  async function handleResetAll() {
-    if (!window.confirm('Are you sure you want to reset all data?')) return;
+  const handleResetAll = async () => {
     try {
-      const res = await fetch('/reset-all');
-      const data = await res.json();
-      alert(data.message);
-      fetchUsers();
+      const res = await fetch('http://classwork.engr.oregonstate.edu:5183/reset/reset-all');
+      const message = await res.text(); // or res.json() if you change the server response
+      alert('Reset complete!');
     } catch (err) {
       console.error(err);
-      alert('An error occurred during reset.');
+      alert('Reset failed');
     }
-  }
-
-  async function handleDeleteSamplePlayer() {
-    if (!window.confirm('Delete the sample player (Alex Ode)?')) return;
+  };
+  
+  const handleDeleteSamplePlayer = async () => {
     try {
-      const res = await fetch('/delete-sample-player');
-      const data = await res.json();
-      alert(data.message);
-      fetchUsers();
+      const res = await fetch('http://classwork.engr.oregonstate.edu:5183/reset/delete-sample-player');
+      const message = await res.text();
+      alert('Sample player deleted');
     } catch (err) {
       console.error(err);
-      alert('An error occurred during delete.');
+      alert('Delete failed');
     }
-  }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, [handleDeleteSamplePlayer, handleResetAll]);
 
   return (
     <div>
+<div>
+  <button onClick={handleResetAll} className="button">Reset All Data</button>
+  <br />
+  <button onClick={handleDeleteSamplePlayer} className="button">Delete Sample Player</button>
+</div>
       <h2>Select a User</h2>
       <div>
         <button className="button" onClick={handleResetAll}>

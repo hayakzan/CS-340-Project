@@ -14,13 +14,13 @@ export default function PeoplePage() {
 
   useEffect(() => {
     // fetch the single user so we can show username
-    fetch(`/users/${userId}`)
+    fetch(`http://classwork.engr.oregonstate.edu:5183/users/${userId}`)
       .then(r => r.json())
       .then(setUser)
       .catch(console.error);
 
     // fetch that user’s people
-    fetch(`/people?user_id=${userId}`)
+    fetch(`http://classwork.engr.oregonstate.edu:5183/people?user_id=${userId}`)
       .then(r => r.json())
       .then(setPeople)
       .catch(console.error);
@@ -33,13 +33,13 @@ export default function PeoplePage() {
 
   async function handleAdd(e) {
     e.preventDefault();
-    await fetch('/people', {
+    await fetch('http://classwork.engr.oregonstate.edu:5183/people', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_id: userId, ...form }),
     });
     setForm({ name: '', phone: '', email: '', dob: '', gender: '' });
-    const r = await fetch(`/people?user_id=${userId}`);
+    const r = await fetch(`http://classwork.engr.oregonstate.edu:5183/people?user_id=${userId}`);
     setPeople(await r.json());
   }
 
@@ -51,7 +51,7 @@ export default function PeoplePage() {
       )
     ) return;
 
-    await fetch(`/people/${pid}`, { method: 'DELETE' });
+    await fetch(`http://classwork.engr.oregonstate.edu:5183/people/${pid}`, { method: 'DELETE' });
     // once deleted, return to the users list
     navigate('/users');
   }

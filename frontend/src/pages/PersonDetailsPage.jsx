@@ -70,13 +70,13 @@ export default function PersonDetailsPage() {
   }, [personId]);
 
   const reloadRels = () =>
-    fetch(`/relationships?person_id=${personId}`)
+    fetch(`http://classwork.engr.oregonstate.edu:5183/relationships?person_id=${personId}`)
       .then(r => r.json())
       .then(setRelationships)
       .catch(console.error);
 
   const reloadEvts = () =>
-    fetch(`/events?person_id=${personId}`)
+    fetch(`http://classwork.engr.oregonstate.edu:5183/events?person_id=${personId}`)
       .then(r => r.json())
       .then(setEvents)
       .catch(console.error);
@@ -101,7 +101,7 @@ export default function PersonDetailsPage() {
   }
   async function handleAddRel(e) {
     e.preventDefault();
-    await fetch('/relationships', {
+    await fetch('http://classwork.engr.oregonstate.edu:5183/relationships', {
       method: 'POST',
       headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify({
@@ -135,7 +135,7 @@ export default function PersonDetailsPage() {
   
   async function submitEditRel(e) {
     e.preventDefault();
-    await fetch(`/relationships/${editRelId}`, {
+    await fetch(`http://classwork.engr.oregonstate.edu:5183/relationships/${editRelId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -152,7 +152,7 @@ export default function PersonDetailsPage() {
 
   async function deleteRel(id) {
     if (!window.confirm('Delete this relationship?')) return;
-    await fetch(`/relationships/${id}`, { method:'DELETE' });
+    await fetch(`http://classwork.engr.oregonstate.edu:5183/relationships/${id}`, { method:'DELETE' });
     reloadRels();
   }
 
@@ -162,7 +162,7 @@ export default function PersonDetailsPage() {
   }
   async function handleAddEvt(e) {
     e.preventDefault();
-    await fetch('/events', {
+    await fetch('http://classwork.engr.oregonstate.edu:5183/events', {
       method:'POST',
       headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify({
@@ -191,7 +191,7 @@ export default function PersonDetailsPage() {
   }
   async function submitEditEvt(e) {
     e.preventDefault();
-    await fetch(`/events/${editEvtId}`, {
+    await fetch(`http://classwork.engr.oregonstate.edu:5183/events/${editEvtId}`, {
       method:'PUT',
       headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify(editEvt)
@@ -201,7 +201,7 @@ export default function PersonDetailsPage() {
   }
   async function deleteEvt(id) {
     if (!window.confirm('Delete this event?')) return;
-    await fetch(`/events/${id}`, { method:'DELETE' });
+    await fetch(`http://classwork.engr.oregonstate.edu:5183/events/${id}`, { method:'DELETE' });
     reloadEvts();
   }
 

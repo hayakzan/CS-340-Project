@@ -4,9 +4,9 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   host: 'classmysql.engr.oregonstate.edu',
-  user: 'cs340_kolaty',
-  password: '5134',
-  database: 'cs340_kolaty'
+  user: 'cs340_haviceh',
+  password: '4481',
+  database: 'cs340_haviceh'
 }).promise();
 
 module.exports = pool;

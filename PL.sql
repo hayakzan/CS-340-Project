@@ -5,10 +5,10 @@
 */
 
 -- Drop procedure if it exists
-DROP PROCEDURE IF EXISTS DeleteSamplePlayer;
+DROP PROCEDURE IF EXISTS DeleteSampleUser;
 
 DELIMITER //
-CREATE PROCEDURE DeleteSamplePlayer()
+CREATE PROCEDURE DeleteSampleUser()
 BEGIN
     DELETE FROM users WHERE name = 'Alex Ode';
 END //

@@ -13,5 +13,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Frontend running at http://classwork.engr.oregonstate.edu:${PORT}`);
+  console.log(`Frontend running at http://localhost:${PORT}`);
 });

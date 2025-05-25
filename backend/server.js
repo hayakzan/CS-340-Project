@@ -9,7 +9,7 @@ const cors = require('cors');
 const db = require('./db-connector');
 
 // Set a port in the range: 1024 < PORT < 65535
-const PORT = 5182;
+const PORT = 5181;
 
 const MY_ONID = "kolaty"
 

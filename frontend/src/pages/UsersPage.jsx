@@ -45,6 +45,7 @@ export default function UsersPage() {
   function handleEdit(id) {
     navigate(`/users/${id}/edit`);
   }
+  
   const handleResetAll = async () => {
     try {
       const res = await fetch('http://classwork.engr.oregonstate.edu:5183/reset/reset-all');
@@ -73,11 +74,6 @@ export default function UsersPage() {
 
   return (
     <div>
-<div>
-  <button onClick={handleResetAll} className="button">Reset All Data</button>
-  <br />
-  <button onClick={handleDeleteSamplePlayer} className="button">Delete Sample Player</button>
-</div>
       <h2>Select a User</h2>
       <div>
         <button className="button" onClick={handleResetAll}>

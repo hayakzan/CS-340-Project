@@ -6,6 +6,7 @@ router.get('/reset-all', async (req, res) => {
   try {
     await pool.query('CALL ResetRelationshipTracker();');
     console.log("Database reset successfully.");
+    // return JSON instead of redirect
     res.json({ message: 'Database reset successfully' });
   } catch (err) {
     console.error("Error during reset:", err);
@@ -17,6 +18,7 @@ router.get('/delete-sample-player', async (req, res) => {
   try {
     await pool.query('CALL DeleteSamplePlayer();');
     console.log("Sample player deleted.");
+    // return JSON instead of redirect
     res.json({ message: 'Sample player deleted. Use RESET to restore.' });
   } catch (err) {
     console.error("Error during delete:", err);

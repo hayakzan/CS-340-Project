@@ -46,6 +46,7 @@ export default function UsersPage() {
     navigate(`/users/${id}/edit`);
   }
 
+  // NEW: call reset via fetch() and handle JSON
   async function handleResetAll() {
     if (!window.confirm('Are you sure you want to reset all data?')) return;
     try {
@@ -59,6 +60,7 @@ export default function UsersPage() {
     }
   }
 
+  // NEW: call delete-sample-player via fetch() and handle JSON
   async function handleDeleteSamplePlayer() {
     if (!window.confirm('Delete the sample player (Alex Ode)?')) return;
     try {
@@ -76,9 +78,13 @@ export default function UsersPage() {
     <div>
       <h2>Select a User</h2>
       <div>
-        <button className="button" onClick={handleResetAll}>Reset All Data</button>
+        <button className="button" onClick={handleResetAll}>
+          Reset All Data
+        </button>
         <br />
-        <button className="button" onClick={handleDeleteSamplePlayer}>Delete Sample Player</button>
+        <button className="button" onClick={handleDeleteSamplePlayer}>
+          Delete Sample Player
+        </button>
       </div>
 
       <form onSubmit={handleAdd} style={{ marginBottom: '1em' }}>

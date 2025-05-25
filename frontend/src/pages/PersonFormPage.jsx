@@ -16,7 +16,7 @@ export default function PersonFormPage() {
 
   useEffect(() => {
     if (!personId) return;
-    fetch(`/people?people_id=${personId}`)
+    fetch(`http://classwork.engr.oregonstate.edu:5183/people?people_id=${personId}`)
       .then(r => r.json())
       .then(rows => {
         if (rows.length) {
@@ -39,7 +39,7 @@ export default function PersonFormPage() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const url    = personId ? `/people/${personId}` : `/people`;
+    const url    = personId ? `http://classwork.engr.oregonstate.edu:5183/people/${personId}` : `http://classwork.engr.oregonstate.edu:5183/people`;
     const method = personId ? 'PUT' : 'POST';
     const body   = personId
       ? { name: form.name, phone: form.phone, email: form.email, dob: form.dob, gender: form.gender }

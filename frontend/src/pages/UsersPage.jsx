@@ -14,14 +14,11 @@ export default function UsersPage() {
 
   // fetch the list
   const fetchUsers = () =>
-    fetch('/users')
+    fetch('http://classwork.engr.oregonstate.edu:5183/users')
       .then(res => res.json())
       .then(setUsers)
       .catch(console.error);
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -29,7 +26,7 @@ export default function UsersPage() {
 
   async function handleAdd(e) {
     e.preventDefault();
-    await fetch('/users', {
+    await fetch('http://classwork.engr.oregonstate.edu:5183/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
@@ -42,16 +39,45 @@ export default function UsersPage() {
     if (!window.confirm('Delete this user and all related data?')) {
       return;
     }
-    await fetch(`/users/${id}`, { method: 'DELETE' });
+    await fetch(`http://classwork.engr.oregonstate.edu:5183/users/${id}`, { method: 'DELETE' });
     fetchUsers();
   }
 
   function handleEdit(id) {
     navigate(`/users/${id}/edit`);
   }
+  const handleResetAll = async () => {
+    try {
+      const res = await fetch('http://classwork.engr.oregonstate.edu:5183/reset/reset-all');
+      const message = await res.text(); // or res.json() if you change the server response
+      alert('Reset complete!');
+    } catch (err) {
+      console.error(err);
+      alert('Reset failed');
+    }
+  };
+  
+  const handleDeleteSamplePlayer = async () => {
+    try {
+      const res = await fetch('http://classwork.engr.oregonstate.edu:5183/reset/delete-sample-player');
+      const message = await res.text();
+      alert('Sample player deleted');
+    } catch (err) {
+      console.error(err);
+      alert('Delete failed');
+    }
+  };
 
+  useEffect(() => {
+    fetchUsers();
+  }, [handleDeleteSamplePlayer, handleResetAll]);
   return (
     <div>
+<div>
+  <button onClick={handleResetAll} className="button">Reset All Data</button>
+  <br />
+  <button onClick={handleDeleteSamplePlayer} className="button">Delete Sample Player</button>
+</div>
       <h2>Select a User</h2>
 
       <form onSubmit={handleAdd} style={{ marginBottom: '1em' }}>

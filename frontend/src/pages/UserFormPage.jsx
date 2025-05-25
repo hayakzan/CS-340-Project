@@ -9,7 +9,7 @@ export default function UserFormPage() {
   // If editing, load existing data
   useEffect(() => {
     if (!userId) return;
-    fetch(`/users/${userId}`)
+    fetch(`http://classwork.engr.oregonstate.edu:5183/users/${userId}`)
       .then(r => r.json())
       .then(data => {
         setForm({
@@ -24,7 +24,7 @@ export default function UserFormPage() {
   const handleSubmit = async e => {
     e.preventDefault();
     const method = userId ? 'PUT' : 'POST';
-    const url    = userId ? `/users/${userId}` : '/users';
+    const url    = userId ? `http://classwork.engr.oregonstate.edu:5183/users/${userId}` : 'http://classwork.engr.oregonstate.edu:5183/users';
 
     await fetch(url, {
       method,

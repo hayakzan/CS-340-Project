@@ -60,7 +60,6 @@ export default function UsersPage() {
     }
   }
 
-  // NEW: call delete-sample-player via fetch() and handle JSON
   async function handleDeleteSamplePlayer() {
     if (!window.confirm('Delete the sample player (Alex Ode)?')) return;
     try {

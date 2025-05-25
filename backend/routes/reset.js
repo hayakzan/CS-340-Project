@@ -7,6 +7,7 @@ router.get('/reset-all', async (req, res) => {
   try {
     await pool.query('CALL ResetRelationshipTracker();');
     console.log("Database reset successfully.");
+
     res.redirect('/?message=Database reset successfully');
   } catch (err) {
     console.error("Error during reset:", err);
@@ -15,10 +16,12 @@ router.get('/reset-all', async (req, res) => {
 });
 
 // Route to delete sample player
+
 router.get('/delete-sample-player', async (req, res) => {
   try {
     await pool.query('CALL DeleteSamplePlayer();');
     console.log("Sample player deleted.");
+
     res.redirect('/?message=Sample player deleted. Use RESET to restore.');
   } catch (err) {
     console.error("Error during delete:", err);
@@ -27,3 +30,4 @@ router.get('/delete-sample-player', async (req, res) => {
 });
 
 module.exports = router;
+

@@ -1,18 +1,16 @@
-// frontend/src/pages/UsersPage.jsx
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function UsersPage() {
   const [users, setUsers] = useState([]);
   const [form, setForm] = useState({
-    name:     '',
+    name: '',
     username: '',
-    dob:      '',
-    gender:   ''
+    dob: '',
+    gender: ''
   });
   const navigate = useNavigate();
 
-  // fetch the list
   const fetchUsers = () =>
     fetch('http://classwork.engr.oregonstate.edu:5183/users')
       .then(res => res.json())
@@ -40,6 +38,7 @@ export default function UsersPage() {
       return;
     }
     await fetch(`http://classwork.engr.oregonstate.edu:5183/users/${id}`, { method: 'DELETE' });
+
     fetchUsers();
   }
 
@@ -71,6 +70,7 @@ export default function UsersPage() {
   useEffect(() => {
     fetchUsers();
   }, [handleDeleteSamplePlayer, handleResetAll]);
+
   return (
     <div>
 <div>
@@ -79,6 +79,15 @@ export default function UsersPage() {
   <button onClick={handleDeleteSamplePlayer} className="button">Delete Sample Player</button>
 </div>
       <h2>Select a User</h2>
+      <div>
+        <button className="button" onClick={handleResetAll}>
+          Reset All Data
+        </button>
+        <br />
+        <button className="button" onClick={handleDeleteSamplePlayer}>
+          Delete Sample Player
+        </button>
+      </div>
 
       <form onSubmit={handleAdd} style={{ marginBottom: '1em' }}>
         <input

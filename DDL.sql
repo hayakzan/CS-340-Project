@@ -7,6 +7,7 @@
 -- Stored Procedure: Resets schema and sample data
 DELIMITER //
 DROP PROCEDURE IF EXISTS ResetRelationshipTracker;
+
 CREATE PROCEDURE ResetRelationshipTracker()
 BEGIN
     SET FOREIGN_KEY_CHECKS = 0;
@@ -96,6 +97,7 @@ BEGIN
     SET FOREIGN_KEY_CHECKS = 1;
 
     -- Sample data
+
     INSERT INTO users (name, username, dob, gender, created_at)
     VALUES
       ('John Doe',   'jdoe',    '1985-07-12', 'M', '2025-04-30 08:00:00'),
@@ -133,6 +135,8 @@ BEGIN
       (2, 2),
       (3, 3);
 END //
+
+
 DELIMITER ;
 
 -- Raw schema definitions (no data or procedures)
@@ -222,3 +226,4 @@ CREATE TABLE relationship_tags (
 
 SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;
+

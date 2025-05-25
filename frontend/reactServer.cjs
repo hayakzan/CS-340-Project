@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 
-const PORT = 4006; // Change this if needed
+const PORT = 4003; 
 
 // Serve static files from the React build directory
 app.use(express.static(path.join(__dirname, 'dist')));
@@ -13,5 +13,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Frontend running at http://classwork.engr.oregonstate.edu:${PORT}`);
+  console.log(`Frontend running at http://localhost:${PORT}`);
 });

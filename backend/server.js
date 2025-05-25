@@ -27,6 +27,7 @@ const tagsRoutes = require('./routes/tags');
 const relationshipTagsRoutes = require('./routes/relationshipTags');
 const reset = require('./routes/reset')
 
+
 // Routes
 app.use('/people', peopleRoutes);
 app.use('/users', usersRoutes);
@@ -41,6 +42,7 @@ app.get('/', async (req, res) => {
   const [rows] = await db.query('SELECT * FROM users LIMIT 1');
   res.status(200).json(rows);
 });
+app.use('/', resetRoutes);
 
 app.listen(PORT, () => {
     console.log(`Backend running at http://classwork.engr.oregonstate.edu:${PORT}`);

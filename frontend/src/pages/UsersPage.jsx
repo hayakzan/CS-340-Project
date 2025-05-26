@@ -1,7 +1,10 @@
+// frontend/src/pages/UsersPage.jsx
+
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function UsersPage() {
+  const BASE = process.env.REACT_APP_API_BASE_URL;
   const [users, setUsers] = useState([]);
   const [form, setForm] = useState({
     name: '',
@@ -11,8 +14,10 @@ export default function UsersPage() {
   });
   const navigate = useNavigate();
 
+
+  // Fetch & refresh  
   const fetchUsers = () =>
-    fetch('/users')
+    fetch(`${BASE}/users`)
       .then(res => res.json())
       .then(setUsers)
       .catch(console.error);
@@ -21,13 +26,15 @@ export default function UsersPage() {
     fetchUsers();
   }, []);
 
+
+  // Form handlers
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
   async function handleAdd(e) {
     e.preventDefault();
-    await fetch('/users', {
+    await fetch(`${BASE}/users`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
@@ -36,9 +43,11 @@ export default function UsersPage() {
     fetchUsers();
   }
 
+
+  // Row actions
   async function handleDelete(id) {
     if (!window.confirm('Delete this user and all related data?')) return;
-    await fetch(`/users/${id}`, { method: 'DELETE' });
+    await fetch(`${BASE}/users/${id}`, { method: 'DELETE' });
     fetchUsers();
   }
 
@@ -46,11 +55,12 @@ export default function UsersPage() {
     navigate(`/users/${id}/edit`);
   }
 
-  // NEW: call reset via fetch() and handle JSON
+
+  // Reset / Sample‑player
   async function handleResetAll() {
     if (!window.confirm('Are you sure you want to reset all data?')) return;
     try {
-      const res = await fetch('/reset-all');
+      const res = await fetch(`${BASE}/reset/reset-all`);
       const data = await res.json();
       alert(data.message);
       fetchUsers();
@@ -63,7 +73,7 @@ export default function UsersPage() {
   async function handleDeleteSamplePlayer() {
     if (!window.confirm('Delete the sample player (Alex Ode)?')) return;
     try {
-      const res = await fetch('/delete-sample-player');
+      const res = await fetch(`${BASE}/reset/delete-sample-player`);
       const data = await res.json();
       alert(data.message);
       fetchUsers();
@@ -73,19 +83,23 @@ export default function UsersPage() {
     }
   }
 
+
+  // Render
   return (
-    <div>
+    <div style={{ padding: '1em' }}>
       <h2>Select a User</h2>
-      <div>
-        <button className="button" onClick={handleResetAll}>
+
+      {/* Reset/Delete controls */}
+      <div style={{ marginBottom: '1em' }}>
+        <button onClick={handleResetAll} className="button">
           Reset All Data
-        </button>
-        <br />
-        <button className="button" onClick={handleDeleteSamplePlayer}>
+        </button>{' '}
+        <button onClick={handleDeleteSamplePlayer} className="button">
           Delete Sample Player
         </button>
       </div>
 
+      {/* Add‑User form */}
       <form onSubmit={handleAdd} style={{ marginBottom: '1em' }}>
         <input
           name="name"
@@ -113,16 +127,23 @@ export default function UsersPage() {
           value={form.gender}
           onChange={handleChange}
         />
-        <button type="submit">Add User</button>
+        <button type="submit" className="button">
+          Add User
+        </button>
       </form>
 
+      {/* User list */}
       <ul>
         {users.map(u => (
           <li key={u.user_id} style={{ marginBottom: '0.5em' }}>
             <strong>{u.name}</strong> — {u.username} |{' '}
             <Link to={`/users/${u.user_id}/people`}>Manage People</Link>{' '}
-            <button onClick={() => handleEdit(u.user_id)}>Edit</button>{' '}
-            <button onClick={() => handleDelete(u.user_id)}>Delete</button>
+            <button onClick={() => handleEdit(u.user_id)} className="button">
+              Edit
+            </button>{' '}
+            <button onClick={() => handleDelete(u.user_id)} className="button">
+              Delete
+            </button>
           </li>
         ))}
       </ul>

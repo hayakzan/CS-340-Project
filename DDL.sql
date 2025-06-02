@@ -1,7 +1,7 @@
 /*
-    Project Step 4
+    Project Step 5
     Group 27: Hunter Havice and Yigit Kolat
-    Last Updated: 05/22/2025
+    Last Updated: 05/02/2025
 */
 
 -- Stored Procedure: Resets schema and sample data

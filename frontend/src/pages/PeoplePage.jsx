@@ -1,10 +1,13 @@
 // frontend/src/pages/PeoplePage.jsx
+
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 export default function PeoplePage() {
   const { userId } = useParams();
-  const navigate    = useNavigate();
+  const navigate = useNavigate();
+
+  const BASE = import.meta.env.VITE_API_BASE_URL;
 
   const [user, setUser]     = useState(null);
   const [people, setPeople] = useState([]);
@@ -14,17 +17,17 @@ export default function PeoplePage() {
 
   useEffect(() => {
     // fetch the single user so we can show username
-    fetch(`/users/${userId}`)
+    fetch(`${BASE}/users/${userId}`)
       .then(r => r.json())
       .then(setUser)
       .catch(console.error);
 
     // fetch that user’s people
-    fetch(`/people?user_id=${userId}`)
+    fetch(`${BASE}/people?user_id=${userId}`)
       .then(r => r.json())
       .then(setPeople)
       .catch(console.error);
-  }, [userId]);
+  }, [BASE, userId]);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -33,26 +36,24 @@ export default function PeoplePage() {
 
   async function handleAdd(e) {
     e.preventDefault();
-    await fetch('/people', {
+
+    await fetch(`${BASE}/people`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_id: userId, ...form }),
     });
+
     setForm({ name: '', phone: '', email: '', dob: '', gender: '' });
-    const r = await fetch(`/people?user_id=${userId}`);
+
+    // Refresh the people list
+    const r = await fetch(`${BASE}/people?user_id=${userId}`);
     setPeople(await r.json());
   }
 
   async function handleDelete(pid) {
-    // prompt for confirmation
-    if (
-      !window.confirm(
-        'Delete this person and all related data?'
-      )
-    ) return;
+    if (!window.confirm('Delete this person and all related data?')) return;
 
-    await fetch(`/people/${pid}`, { method: 'DELETE' });
-    // once deleted, return to the users list
+    await fetch(`${BASE}/people/${pid}`, { method: 'DELETE' });
     navigate('/users');
   }
 
@@ -63,7 +64,7 @@ export default function PeoplePage() {
   if (!user) return <p>Loading…</p>;
 
   return (
-    <div>
+    <div style={{ padding: '1em' }}>
       {/* Back to Users */}
       <p>
         <Link to="/users">← Back to Users</Link>
@@ -105,7 +106,9 @@ export default function PeoplePage() {
           value={form.gender}
           onChange={handleChange}
         />
-        <button type="submit">Add Person</button>
+        <button type="submit" className="button">
+          Add Person
+        </button>
       </form>
 
       {/* People List */}
@@ -113,8 +116,12 @@ export default function PeoplePage() {
         {people.map(p => (
           <li key={p.people_id} style={{ marginBottom: '0.5em' }}>
             <strong>{p.name}</strong> — {p.phone || 'N/A'} | {p.email || 'N/A'}{' '}
-            <button onClick={() => handleEdit(p.people_id)}>Edit</button>{' '}
-            <button onClick={() => handleDelete(p.people_id)}>Delete</button>{' '}
+            <button onClick={() => handleEdit(p.people_id)} className="button">
+              Edit
+            </button>{' '}
+            <button onClick={() => handleDelete(p.people_id)} className="button">
+              Delete
+            </button>{' '}
             —{' '}
             <Link to={`/users/${userId}/people/${p.people_id}`}>
               Details

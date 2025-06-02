@@ -4,7 +4,8 @@ import { useState, useEffect }    from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 export default function PersonFormPage() {
-  const BASE               = process.env.REACT_APP_API_BASE_URL;
+  // Use VITE_API_BASE_URL (set in .env) instead of CRA’s env
+  const BASE               = import.meta.env.VITE_API_BASE_URL;
   const { userId, personId } = useParams();
   const navigate           = useNavigate();
 
@@ -49,9 +50,7 @@ export default function PersonFormPage() {
       ? `${BASE}/people/${personId}`
       : `${BASE}/people`;
     const method = personId ? 'PUT' : 'POST';
-    const body   = personId
-      ? { ...form }
-      : { user_id: userId, ...form };
+    const body   = personId ? { ...form } : { user_id: userId, ...form };
 
     await fetch(url, {
       method,

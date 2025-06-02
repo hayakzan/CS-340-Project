@@ -4,7 +4,6 @@
     Last Updated: 05/22/2025
 */
 
-SET FOREIGN_KEY_CHECKS=0;
 -- Stored Procedure: Resets schema and sample data
 DELIMITER //
 DROP PROCEDURE IF EXISTS ResetRelationshipTracker;

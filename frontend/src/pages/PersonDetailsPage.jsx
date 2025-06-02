@@ -4,9 +4,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState }    from 'react';
 
 export default function PersonDetailsPage() {
-  const BASE           = process.env.REACT_APP_API_BASE_URL;
-  const { personId }   = useParams();
-  const navigate       = useNavigate();
+  // Use VITE_API_BASE_URL 
+  const BASE         = import.meta.env.VITE_API_BASE_URL;
+  const { personId } = useParams();
+  const navigate     = useNavigate();
 
   // page‑wide state
   const [person,        setPerson]        = useState({});
@@ -74,6 +75,7 @@ export default function PersonDetailsPage() {
 
   // load everything on mount / personId change
   useEffect(() => {
+    // fetch person details
     fetch(`${BASE}/people/${personId}`)
       .then(r => r.json())
       .then(setPerson)
@@ -238,7 +240,7 @@ export default function PersonDetailsPage() {
               </option>
             ))}
           </select>
-          <button type="submit">Assign Tag</button>
+          <button type="submit" className="button">Assign Tag</button>
         </form>
       </div>
 
@@ -252,7 +254,6 @@ export default function PersonDetailsPage() {
       {/* — Relationships — */}
       <section>
         <h3>Relationships</h3>
-        {/* ... relationships form & list as above ... */}
       </section>
 
       <hr/>
@@ -260,7 +261,6 @@ export default function PersonDetailsPage() {
       {/* — Events — */}
       <section>
         <h3>Events</h3>
-        {/* ... events form & list as above ... */}
       </section>
     </div>
   );

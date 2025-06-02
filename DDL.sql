@@ -136,7 +136,6 @@ DELIMITER ;
 
 CALL ResetRelationshipTracker();
 
-/*
 -- Raw schema definitions (no data or procedures)
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -223,4 +222,4 @@ CREATE TABLE relationship_tags (
 
 SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;
-*/
+

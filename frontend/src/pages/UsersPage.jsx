@@ -86,12 +86,9 @@ export default function UsersPage() {
 
       {/* Reset/Delete controls */}
       <div style={{ marginBottom: '1em' }}>
-        <button onClick={handleResetAll} className="button">
-            Data
-        </button>{' '}
-        <button onClick={handleDeleteSamplePlayer} className="button">
-          Delete Sample Player
-        </button>
+        <button onClick={handleResetAll} className="button">Reset All Data</button>
+        <br />
+        <button onClick={handleDeleteSamplePlayer} className="button">Delete Sample Player</button>
       </div>
 
       {/* Add‑User form */}

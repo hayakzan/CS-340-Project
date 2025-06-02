@@ -60,7 +60,7 @@ export default function UsersPage() {
   const handleResetAll = async () => {
     try {
       const res = await fetch(`${BASE}/reset/reset-all`);
-      const message = await res.text(); // or res.json() if you change the server response
+      const message = await res.json(); // or res.json() if you change the server response
       alert('Reset complete!');
     } catch (err) {
       console.error(err);
@@ -71,7 +71,7 @@ export default function UsersPage() {
   const handleDeleteSamplePlayer = async () => {
     try {
       const res = await fetch(`${BASE}/reset/delete-sample-player`);
-      const message = await res.text();
+      const message = await res.json();
       alert('Sample player deleted');
     } catch (err) {
       console.error(err);

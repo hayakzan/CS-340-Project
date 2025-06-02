@@ -134,6 +134,8 @@ BEGIN
 END //
 DELIMITER ;
 
+CALL ResetRelationshipTracker();
+
 -- Raw schema definitions (no data or procedures)
 SET FOREIGN_KEY_CHECKS = 0;
 

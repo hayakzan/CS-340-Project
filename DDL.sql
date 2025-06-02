@@ -4,9 +4,9 @@
     Last Updated: 05/22/2025
 */
 
+DROP PROCEDURE IF EXISTS ResetRelationshipTracker;
 -- Stored Procedure: Resets schema and sample data
 DELIMITER //
-DROP PROCEDURE IF EXISTS ResetRelationshipTracker;
 CREATE PROCEDURE ResetRelationshipTracker()
 BEGIN
     SET FOREIGN_KEY_CHECKS = 0;
@@ -222,4 +222,3 @@ CREATE TABLE relationship_tags (
 
 SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;
-

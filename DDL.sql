@@ -1,7 +1,7 @@
 /*
     Project Step 5
     Group 27: Hunter Havice and Yigit Kolat
-    Last Updated: 05/02/2025
+    Last Updated: 05/22/2025
 */
 
 -- Stored Procedure: Resets schema and sample data
@@ -136,6 +136,7 @@ DELIMITER ;
 
 CALL ResetRelationshipTracker();
 
+/*
 -- Raw schema definitions (no data or procedures)
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -222,3 +223,4 @@ CREATE TABLE relationship_tags (
 
 SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;
+*/

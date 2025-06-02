@@ -24,7 +24,7 @@ export default function UsersPage() {
 
   useEffect(() => {
     fetchUsers();
-  }, [handleDeleteSamplePlayer, handleResetAll]);
+  }, []);
 
 
   // Form handlers

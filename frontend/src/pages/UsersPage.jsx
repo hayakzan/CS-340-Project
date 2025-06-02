@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function UsersPage() {
-  const BASE = process.env.REACT_APP_API_BASE_URL;
+  const BASE = import.meta.env.VITE_API_BASE_URL;
   const [users, setUsers] = useState([]);
   const [form, setForm] = useState({
     name: '',

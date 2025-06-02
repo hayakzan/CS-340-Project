@@ -24,7 +24,7 @@ export default function UsersPage() {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [handleDeleteSamplePlayer, handleResetAll]);
 
 
   // Form handlers
@@ -57,32 +57,27 @@ export default function UsersPage() {
 
 
   // Reset / Sample‑player
-  async function handleResetAll() {
-    if (!window.confirm('Are you sure you want to reset all data?')) return;
+  const handleResetAll = async () => {
     try {
       const res = await fetch(`${BASE}/reset/reset-all`);
-      const data = await res.json();
-      alert(data.message);
-      fetchUsers();
+      const message = await res.json(); // or res.json() if you change the server response
+      alert('Reset complete!');
     } catch (err) {
       console.error(err);
-      alert('An error occurred during reset.');
+      alert('Reset failed');
     }
-  }
+  };
 
-  async function handleDeleteSamplePlayer() {
-    if (!window.confirm('Delete the sample player (Alex Ode)?')) return;
+  const handleDeleteSamplePlayer = async () => {
     try {
       const res = await fetch(`${BASE}/reset/delete-sample-player`);
-      const data = await res.json();
-      alert(data.message);
-      fetchUsers();
+      const message = await res.text();
+      alert('Sample player deleted');
     } catch (err) {
       console.error(err);
-      alert('An error occurred during delete.');
+      alert('Delete failed');
     }
-  }
-
+  };
 
   // Render
   return (
@@ -92,7 +87,7 @@ export default function UsersPage() {
       {/* Reset/Delete controls */}
       <div style={{ marginBottom: '1em' }}>
         <button onClick={handleResetAll} className="button">
-          Reset All Data
+            Data
         </button>{' '}
         <button onClick={handleDeleteSamplePlayer} className="button">
           Delete Sample Player

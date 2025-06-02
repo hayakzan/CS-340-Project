@@ -4,14 +4,22 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect }      from 'react';
 
 export default function UserFormPage() {
-  const BASE               = process.env.REACT_APP_API_BASE_URL;
-  const { userId }         = useParams();
-  const navigate           = useNavigate();
-  const [form, setForm]    = useState({ name: '', username: '', dob: '', gender: '' });
+  // Use VITE_API_BASE_URL 
+  const BASE       = import.meta.env.VITE_API_BASE_URL;
+  const { userId } = useParams();
+  const navigate   = useNavigate();
+
+  const [form, setForm] = useState({
+    name:     '',
+    username: '',
+    dob:      '',
+    gender:   ''
+  });
 
   // If editing, load existing data
   useEffect(() => {
     if (!userId) return;
+
     fetch(`${BASE}/users/${userId}`)
       .then(r => r.json())
       .then(data => {
@@ -19,7 +27,7 @@ export default function UserFormPage() {
           name:     data.name,
           username: data.username,
           dob:      data.dob ? data.dob.split('T')[0] : '',
-          gender:   data.gender,
+          gender:   data.gender
         });
       })
       .catch(console.error);
@@ -38,6 +46,7 @@ export default function UserFormPage() {
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify(form),
     });
+
     navigate('/users');
   };
 

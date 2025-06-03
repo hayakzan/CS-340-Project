@@ -4,7 +4,7 @@ import { useState, useEffect }    from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 export default function PersonFormPage() {
-  // Use VITE_API_BASE_URL 
+  // — use the Vite env
   const BASE               = import.meta.env.VITE_API_BASE_URL;
   const { userId, personId } = useParams();
   const navigate           = useNavigate();
@@ -17,26 +17,36 @@ export default function PersonFormPage() {
     gender: ''
   });
 
-  // Load existing person if editing
   useEffect(() => {
-    if (!personId) return;
+    // If there is no personId, clear out the form (new‑person mode)
+    if (!personId) {
+      setForm({
+        name:   '',
+        phone:  '',
+        email:  '',
+        dob:    '',
+        gender: ''
+      });
+      return;
+    }
 
-    fetch(`${BASE}/people?people_id=${personId}`)
+    // Editing an existing person: fetch via GET /people/:personId
+    fetch(`${BASE}/people/${personId}`)
       .then(r => r.json())
-      .then(rows => {
-        if (rows.length) {
-          const p = rows[0];
-          setForm({
-            name:   p.name,
-            phone:  p.phone  || '',
-            email:  p.email  || '',
-            dob:    p.dob    ? p.dob.split('T')[0] : '',
-            gender: p.gender || ''
-          });
-        }
+      .then(data => {
+        // the API should return exactly one object
+        // (make sure your backend GET /people/:personId returns an object, not an array)
+        setForm({
+          name:   data.name,
+          phone:  data.phone  || '',
+          email:  data.email  || '',
+          dob:    data.dob    ? data.dob.slice(0,10) : '',
+          gender: data.gender || ''
+        });
       })
       .catch(console.error);
   }, [BASE, personId]);
+
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -50,7 +60,9 @@ export default function PersonFormPage() {
       ? `${BASE}/people/${personId}`
       : `${BASE}/people`;
     const method = personId ? 'PUT' : 'POST';
-    const body   = personId ? { ...form } : { user_id: userId, ...form };
+    const body   = personId
+      ? { ...form }
+      : { user_id: userId, ...form };
 
     await fetch(url, {
       method,
@@ -61,6 +73,7 @@ export default function PersonFormPage() {
     navigate(`/users/${userId}/people`);
   }
 
+
   return (
     <div style={{ padding: '1em' }}>
       <h2>
@@ -69,7 +82,10 @@ export default function PersonFormPage() {
           : `Add New Person for User ${userId}`}
       </h2>
 
-      <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '0.75em', maxWidth: 400 }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: 'grid', gap: '0.75em', maxWidth: 400 }}
+      >
         <label>
           Name
           <input

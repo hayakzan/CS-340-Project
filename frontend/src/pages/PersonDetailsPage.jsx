@@ -4,21 +4,17 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState }    from 'react';
 
 export default function PersonDetailsPage() {
-  // Use VITE_API_BASE_URL 
   const BASE         = import.meta.env.VITE_API_BASE_URL;
   const { personId } = useParams();
   const navigate     = useNavigate();
 
-  // page‑wide state
   const [person,        setPerson]        = useState({});
   const [relationships, setRelationships] = useState([]);
   const [events,        setEvents]        = useState([]);
 
-  // single person‑tag assignment state
   const [personTag,    setPersonTag]    = useState(null);
   const [newPersonTag, setNewPersonTag] = useState('');
 
-  // new‑relationship form
   const [newRel, setNewRel] = useState({
     rel_type:   '',
     status:     'Active',
@@ -27,7 +23,7 @@ export default function PersonDetailsPage() {
     notes:      ''
   });
 
-  // edit‑relationship form
+  
   const [editRelId, setEditRelId] = useState(null);
   const [editRel,   setEditRel]   = useState({
     rel_type:   '',
@@ -37,7 +33,7 @@ export default function PersonDetailsPage() {
     notes:      ''
   });
 
-  // new‑event form
+  
   const [newEvt, setNewEvt] = useState({
     relationship_id: '',
     event_type:      '',
@@ -45,7 +41,7 @@ export default function PersonDetailsPage() {
     event_date:      ''
   });
 
-  // edit‑event form
+  
   const [editEvtId, setEditEvtId] = useState(null);
   const [editEvt,   setEditEvt]   = useState({
     event_type: '',
@@ -53,14 +49,13 @@ export default function PersonDetailsPage() {
     event_date: ''
   });
 
-  // static “master” list of tags
+  
   const TAG_OPTIONS = [
     { tag_id: 1, label: 'Casual'     },
     { tag_id: 2, label: 'Close'      },
     { tag_id: 3, label: 'Peripheral' }
   ];
 
-  // fetch functions
   const reloadRels = () =>
     fetch(`${BASE}/relationships?person_id=${personId}`)
       .then(r => r.json())
@@ -73,9 +68,9 @@ export default function PersonDetailsPage() {
       .then(setEvents)
       .catch(console.error);
 
-  // load everything on mount / personId change
   useEffect(() => {
-    // fetch person details
+    // Log to confirm that BASE is actually defined
+    // console.log('PersonDetailsPage: BASE =', BASE);
     fetch(`${BASE}/people/${personId}`)
       .then(r => r.json())
       .then(setPerson)
@@ -83,9 +78,9 @@ export default function PersonDetailsPage() {
 
     reloadRels();
     reloadEvts();
-  }, [BASE, personId]);
+  }, [BASE, personId]);   
 
-  // —— Person‑tag assignment —— 
+  
   function handleChangePersonTag(e) {
     setNewPersonTag(e.target.value);
   }
@@ -248,12 +243,27 @@ export default function PersonDetailsPage() {
       <p><strong>Phone:</strong> {person.phone || 'N/A'}</p>
       <p><strong>Email:</strong> {person.email || 'N/A'}</p>
       <p><strong>DOB:</strong>   {person.dob?.slice(0,10) || 'N/A'}</p>
-      <p><strong>Gender:</strong>{person.gender || 'N/A'}</p>
+      <p><strong>Gender:</strong> {person.gender || 'N/A'}</p>
       <hr/>
 
       {/* — Relationships — */}
       <section>
         <h3>Relationships</h3>
+        {relationships.length === 0 ? (
+          <p style={{ fontStyle: 'italic' }}>No relationships found.</p>
+        ) : (
+          <ul>
+            {relationships.map(r => (
+              <li key={r.relationship_id} style={{ marginBottom: '0.5em' }}>
+                <strong>Type:</strong> {r.rel_type} &nbsp;|&nbsp;
+                <strong>Status:</strong> {r.status} &nbsp;|&nbsp;
+                <strong>Started:</strong> {r.started_at?.slice(0,10) || 'N/A'} &nbsp;|&nbsp;
+                <em>{r.notes || ''}</em>
+                {/* You can also add Edit/Delete buttons here if needed */}
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <hr/>
@@ -261,6 +271,19 @@ export default function PersonDetailsPage() {
       {/* — Events — */}
       <section>
         <h3>Events</h3>
+        {events.length === 0 ? (
+          <p style={{ fontStyle: 'italic' }}>No events found.</p>
+        ) : (
+          <ul>
+            {events.map(ev => (
+              <li key={ev.rel_event_id} style={{ marginBottom: '0.5em' }}>
+                <strong>Event Type:</strong> {ev.event_type} &nbsp;|&nbsp;
+                <strong>Date:</strong> {ev.event_date?.slice(0,10)} &nbsp;|&nbsp;
+                <em>{ev.event_desc || ''}</em>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );

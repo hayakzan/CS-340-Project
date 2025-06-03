@@ -134,3 +134,5 @@ BEGIN
       (3, 3);
 END //
 DELIMITER ;
+
+CALL ResetRelationshipTracker();

@@ -4,10 +4,9 @@
     Last Updated: 06/02/2025
 */
 
--- Drop procedure if exists
-DROP PROCEDURE IF EXISTS ResetRelationshipTracker;
-
+-- Stored Procedure: Resets schema and sample data
 DELIMITER //
+DROP PROCEDURE IF EXISTS ResetRelationshipTracker;
 CREATE PROCEDURE ResetRelationshipTracker()
 BEGIN
     SET FOREIGN_KEY_CHECKS = 0;
@@ -136,3 +135,91 @@ END //
 DELIMITER ;
 
 CALL ResetRelationshipTracker();
+
+-- Raw schema definitions (no data or procedures)
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS relationship_tags;
+DROP TABLE IF EXISTS tags;
+DROP TABLE IF EXISTS relationship_events;
+DROP TABLE IF EXISTS relationships;
+DROP TABLE IF EXISTS people;
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+  user_id   INT(11)      NOT NULL AUTO_INCREMENT,
+  name      VARCHAR(255) NOT NULL,
+  username  VARCHAR(255) NOT NULL UNIQUE,
+  dob       DATE,
+  gender    VARCHAR(50),
+  created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id)
+);
+
+
+CREATE TABLE people (
+  people_id  INT(11)      NOT NULL AUTO_INCREMENT,
+  user_id    INT(11)      NOT NULL,
+  name       VARCHAR(255) NOT NULL,
+  phone      VARCHAR(15),
+  email      VARCHAR(255),
+  dob        DATE,
+  gender     VARCHAR(50),
+  created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (people_id),
+  FOREIGN KEY (user_id)
+    REFERENCES users(user_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
+CREATE TABLE relationships (
+  relationship_id INT(11)    NOT NULL AUTO_INCREMENT,
+  person_id       INT(11)    NOT NULL,
+  rel_type        VARCHAR(50),
+  status          VARCHAR(50),
+  started_at      DATE,
+  ended_at        DATE,
+  notes           TEXT,
+  PRIMARY KEY (relationship_id),
+  FOREIGN KEY (person_id)
+    REFERENCES people(people_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
+CREATE TABLE relationship_events (
+  rel_event_id    INT(11)      NOT NULL AUTO_INCREMENT,
+  relationship_id INT(11)      NOT NULL,
+  event_type      VARCHAR(100),
+  event_desc      TEXT,
+  event_date      DATE         NOT NULL,
+  created_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (rel_event_id),
+  FOREIGN KEY (relationship_id)
+    REFERENCES relationships(relationship_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+CREATE TABLE tags (
+  tag_id   INT(11)      NOT NULL AUTO_INCREMENT,
+  label    VARCHAR(100) NOT NULL UNIQUE,
+  PRIMARY KEY (tag_id)
+);
+CREATE TABLE relationship_tags (
+  relationship_id INT(11) NOT NULL,
+  tag_id          INT(11) NOT NULL,
+  PRIMARY KEY (relationship_id, tag_id),
+  FOREIGN KEY (relationship_id)
+    REFERENCES relationships(relationship_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (tag_id)
+    REFERENCES tags(tag_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
+SET FOREIGN_KEY_CHECKS = 1;
+COMMIT;
+

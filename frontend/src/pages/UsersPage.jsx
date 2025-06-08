@@ -14,7 +14,6 @@ export default function UsersPage() {
   });
   const navigate = useNavigate();
 
-
   // Fetch & refresh  
   const fetchUsers = () =>
     fetch(`${BASE}/users`)
@@ -25,7 +24,6 @@ export default function UsersPage() {
   useEffect(() => {
     fetchUsers();
   }, []);
-
 
   // Form handlers
   function handleChange(e) {
@@ -43,7 +41,6 @@ export default function UsersPage() {
     fetchUsers();
   }
 
-
   // Row actions
   async function handleDelete(id) {
     if (!window.confirm('Delete this user and all related data?')) return;
@@ -55,40 +52,28 @@ export default function UsersPage() {
     navigate(`/users/${id}/edit`);
   }
 
-
-  // Reset / Sample‑player
+  // Reset data
   const handleResetAll = async () => {
     try {
       const res = await fetch(`${BASE}/reset/reset-all`);
-      const message = await res.json(); // or res.json() if you change the server response
+      await res.json();
       alert('Reset complete!');
+      fetchUsers();
     } catch (err) {
       console.error(err);
       alert('Reset failed');
     }
   };
 
-  const handleDeleteSamplePlayer = async () => {
-    try {
-      const res = await fetch(`${BASE}/reset/delete-sample-player`);
-      const message = await res.json();
-      alert('Sample player deleted');
-    } catch (err) {
-      console.error(err);
-      alert('Delete failed');
-    }
-  };
-
-  // Render
   return (
     <div style={{ padding: '1em' }}>
       <h2>Select a User</h2>
 
-      {/* Reset/Delete controls */}
+      {/* Reset control */}
       <div style={{ marginBottom: '1em' }}>
-        <button onClick={handleResetAll} className="button">Reset All Data</button>
-        <br />
-        <button onClick={handleDeleteSamplePlayer} className="button">Delete Sample Player</button>
+        <button onClick={handleResetAll} className="button">
+          Reset All Data
+        </button>
       </div>
 
       {/* Add‑User form */}

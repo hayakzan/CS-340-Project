@@ -8,29 +8,13 @@ const pool    = require('../db-connector');
 router.get('/reset-all', async (req, res) => {
   try {
     await pool.query('CALL ResetRelationshipTracker();');
-    console.log("Database reset successfully.");
-
-    // Send back JSON
+    console.log('Database reset successfully.');
+    // return JSON response
     res.json({ message: 'Database reset successfully' });
   } catch (err) {
-    console.error("Error during reset:", err);
-
-    // 500 status + JSON error message
+    console.error('Error during reset:', err);
+    // 500 status + JSON error
     res.status(500).json({ message: 'Reset failed' });
-  }
-});
-
-// Route to delete sample player
-router.get('/delete-sample-player', async (req, res) => {
-  try {
-    await pool.query('CALL DeleteSamplePlayer();');
-    console.log("Sample player deleted.");
-
-    // Send back JSON
-    res.json({ message: 'Sample player deleted. Use RESET to restore.' });
-  } catch (err) {
-    console.error("Error during delete:", err);
-    res.status(500).json({ message: 'Delete failed' });
   }
 });
 

@@ -1,25 +1,23 @@
 // frontend/src/pages/UserFormPage.jsx
 
-import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect }      from 'react';
+import { useParams, useNavigate } from 'react-router-dom'
+import { useState, useEffect }    from 'react'
 
 export default function UserFormPage() {
-  // Use VITE_API_BASE_URL 
-  const BASE       = import.meta.env.VITE_API_BASE_URL;
-  const { userId } = useParams();
-  const navigate   = useNavigate();
+  const BASE     = import.meta.env.VITE_API_BASE_URL
+  const { userId } = useParams()
+  const navigate = useNavigate()
 
   const [form, setForm] = useState({
     name:     '',
     username: '',
     dob:      '',
     gender:   ''
-  });
+  })
 
-  // If editing, load existing data
+  // load existing user when editing
   useEffect(() => {
-    if (!userId) return;
-
+    if (!userId) return
     fetch(`${BASE}/users/${userId}`)
       .then(r => r.json())
       .then(data => {
@@ -27,72 +25,112 @@ export default function UserFormPage() {
           name:     data.name,
           username: data.username,
           dob:      data.dob ? data.dob.split('T')[0] : '',
-          gender:   data.gender
-        });
+          gender:   data.gender || ''
+        })
       })
-      .catch(console.error);
-  }, [BASE, userId]);
+      .catch(console.error)
+  }, [BASE, userId])
 
-  const handleSubmit = async e => {
-    e.preventDefault();
+  function handleChange(e) {
+    const { name, value } = e.target
+    setForm(f => ({ ...f, [name]: value }))
+  }
 
-    const method = userId ? 'PUT' : 'POST';
-    const url    = userId
-      ? `${BASE}/users/${userId}`
-      : `${BASE}/users`;
+  async function handleSubmit(e) {
+    e.preventDefault()
+    const url    = userId ? `${BASE}/users/${userId}` : `${BASE}/users`
+    const method = userId ? 'PUT' : 'POST'
 
     await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(form),
-    });
+      body:    JSON.stringify(form)
+    })
 
-    navigate('/users');
-  };
+    navigate('/users')
+  }
 
   return (
-    <div style={{ padding: '1em' }}>
-      <h2>{userId ? 'Edit User' : 'Add User'}</h2>
-      <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '0.5em' }}>
-        <label>
-          Name:
-          <input
-            name="name"
-            value={form.name}
-            onChange={e => setForm({ ...form, name: e.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Username:
-          <input
-            name="username"
-            value={form.username}
-            onChange={e => setForm({ ...form, username: e.target.value })}
-            required
-          />
-        </label>
-        <label>
-          DOB:
-          <input
-            name="dob"
-            type="date"
-            value={form.dob}
-            onChange={e => setForm({ ...form, dob: e.target.value })}
-          />
-        </label>
-        <label>
-          Gender:
-          <input
-            name="gender"
-            value={form.gender}
-            onChange={e => setForm({ ...form, gender: e.target.value })}
-          />
-        </label>
-        <button type="submit" className="button">
+    <div
+      style={{
+        padding:   '1em',
+        maxWidth:  400,
+        marginLeft:'1em'
+      }}
+    >
+      <button
+        onClick={() => navigate('/users')}
+        className="button"
+        style={{ marginBottom: '1em' }}
+      >
+        ← Back to Users
+      </button>
+
+      <h2 style={{ margin: '0 0 1em 0' }}>
+        {userId ? 'Edit User' : 'Add User'}
+      </h2>
+
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display:             'grid',
+          gridTemplateColumns: 'max-content 1fr',
+          gap:                 '0.5em 1em',
+          alignItems:          'center'
+        }}
+      >
+        <label htmlFor="name">Name:</label>
+        <input
+          id="name"
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          required
+        />
+
+        <label htmlFor="username">Username:</label>
+        <input
+          id="username"
+          name="username"
+          value={form.username}
+          onChange={handleChange}
+          required
+        />
+
+        <label htmlFor="dob">DOB:</label>
+        <input
+          id="dob"
+          name="dob"
+          type="date"
+          value={form.dob}
+          onChange={handleChange}
+        />
+
+        <label htmlFor="gender">Gender:</label>
+        <select
+          id="gender"
+          name="gender"
+          value={form.gender}
+          onChange={handleChange}
+          required
+        >
+          <option value="">— Select —</option>
+          <option value="F">Female</option>
+          <option value="M">Male</option>
+          <option value="Other">Other</option>
+        </select>
+
+        {/* keeps the button in the right column */}
+        <div />
+
+        <button
+          type="submit"
+          className="button"
+          style={{ width: '100%' }}
+        >
           {userId ? 'Update' : 'Add'}
         </button>
       </form>
     </div>
-  );
+  )
 }

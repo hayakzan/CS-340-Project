@@ -1,7 +1,7 @@
 /*
-    Project Step 5
+    Project Step 6
     Group 27: Hunter Havice and Yigit Kolat
-    Last Updated: 06/02/2025
+    Last Updated: 06/09/2025
 */
 
 -- Stored Procedure: Resets schema and sample data
@@ -97,15 +97,15 @@ BEGIN
 
     INSERT INTO users (name, username, dob, gender, created_at)
     VALUES
-      ('John Doe',   'jdoe',    '1985-07-12', 'M', '2025-04-30 08:00:00'),
-      ('Jane Smith', 'jsmith',  '1990-11-03', 'F', '2025-04-30 08:05:00'),
-      ('Alex Ode',   'aode',    NULL,         'X', '2025-04-30 08:10:00');
+      ('John Doe',   'jdoe',    '1985-07-12', 'Male', '2025-04-30 08:00:00'),
+      ('Jane Smith', 'jsmith',  '1990-11-03', 'Female', '2025-04-30 08:05:00'),
+      ('Alex Ode',   'aode',    NULL,         'Other', '2025-04-30 08:10:00');
 
     INSERT INTO people (user_id, name, phone, email, dob, gender, created_at)
     VALUES
-      (1, 'David Lee',    '2065550001', 'dlee@sample.com',   '1990-03-01', 'M', '2025-05-01 08:00:00'),
-      (1, 'Ricardo Havi', '2065550002', 'rhavi@sample.com',  '1985-03-22', 'M', '2025-05-01 08:05:00'),
-      (1, 'Priya Polat',  NULL,         'ppolat@sample.com', NULL,         'X', '2025-05-01 08:10:00');
+      (1, 'David Lee',    '2065550001', 'dlee@sample.com',   '1990-03-01', 'Male', '2025-05-01 08:00:00'),
+      (1, 'Ricardo Havi', '2065550002', 'rhavi@sample.com',  '1985-03-22', 'Male', '2025-05-01 08:05:00'),
+      (1, 'Priya Polat',  NULL,         'ppolat@sample.com', NULL,         'Other', '2025-05-01 08:10:00');
 
     INSERT INTO relationships (person_id, rel_type, status, started_at, ended_at, notes)
     VALUES

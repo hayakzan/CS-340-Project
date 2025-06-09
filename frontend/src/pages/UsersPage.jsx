@@ -1,7 +1,7 @@
 // frontend/src/pages/UsersPage.jsx
 
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function UsersPage() {
   const BASE = import.meta.env.VITE_API_BASE_URL;
@@ -52,6 +52,10 @@ export default function UsersPage() {
     navigate(`/users/${id}/edit`);
   }
 
+  function handleManagePeople(id) {
+    navigate(`/users/${id}/people`);
+  }
+
   // Reset data
   const handleResetAll = async () => {
     try {
@@ -76,7 +80,7 @@ export default function UsersPage() {
         </button>
       </div>
 
-      {/* Add‑User form */}
+      {/* Add-User form */}
       <form onSubmit={handleAdd} style={{ marginBottom: '1em' }}>
         <input
           name="name"
@@ -114,7 +118,12 @@ export default function UsersPage() {
         {users.map(u => (
           <li key={u.user_id} style={{ marginBottom: '0.5em' }}>
             <strong>{u.name}</strong> — {u.username} |{' '}
-            <Link to={`/users/${u.user_id}/people`}>Manage People</Link>{' '}
+            <button
+              onClick={() => handleManagePeople(u.user_id)}
+              className="button"
+            >
+              Manage People
+            </button>{' '}
             <button onClick={() => handleEdit(u.user_id)} className="button">
               Edit
             </button>{' '}

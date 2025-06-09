@@ -1,13 +1,12 @@
 // frontend/src/pages/PersonFormPage.jsx
 
-import { useState, useEffect }    from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 export default function PersonFormPage() {
-  // Use VITE_API_BASE_URL 
-  const BASE               = import.meta.env.VITE_API_BASE_URL;
+  const BASE         = import.meta.env.VITE_API_BASE_URL;
   const { userId, personId } = useParams();
-  const navigate           = useNavigate();
+  const navigate     = useNavigate();
 
   const [form, setForm] = useState({
     name:   '',
@@ -17,23 +16,20 @@ export default function PersonFormPage() {
     gender: ''
   });
 
-  // Load existing person if editing
+  // load existing person when editing
   useEffect(() => {
     if (!personId) return;
 
-    fetch(`${BASE}/people?people_id=${personId}`)
-      .then(r => r.json())
-      .then(rows => {
-        if (rows.length) {
-          const p = rows[0];
-          setForm({
-            name:   p.name,
-            phone:  p.phone  || '',
-            email:  p.email  || '',
-            dob:    p.dob    ? p.dob.split('T')[0] : '',
-            gender: p.gender || ''
-          });
-        }
+    fetch(`${BASE}/people/${personId}`)
+      .then(res => res.json())
+      .then(p => {
+        setForm({
+          name:   p.name,
+          phone:  p.phone  || '',
+          email:  p.email  || '',
+          dob:    p.dob    ? p.dob.split('T')[0] : '',
+          gender: p.gender || ''
+        });
       })
       .catch(console.error);
   }, [BASE, personId]);
@@ -55,7 +51,7 @@ export default function PersonFormPage() {
     await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(body),
+      body: JSON.stringify(body)
     });
 
     navigate(`/users/${userId}/people`);

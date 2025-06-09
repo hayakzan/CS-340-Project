@@ -4,49 +4,46 @@ const router  = express.Router();
 const db      = require('../db-connector');
 
 // ASSIGN tag
-// POST /relationship-tags
 router.post('/', async (req, res) => {
   const { relationship_id, tag_id } = req.body;
   try {
     await db.query(
-      `INSERT INTO relationship_tags
-         (relationship_id, tag_id)
+      `INSERT INTO relationship_tags (relationship_id, tag_id)
        VALUES (?, ?)`,
       [relationship_id, tag_id]
     );
-    res.status(201).send('Tag assigned.');
+    res.status(201).json({ message: 'Tag assigned.' });
   } catch (err) {
     console.error(err);
-    res.status(500).send('Failed to assign tag.');
+    res.status(500).json({ message: 'Failed to assign tag.' });
   }
 });
 
-// READ all (or by person_id)
-// GET /relationship-tags?person_id=…
+// READ all tags for a person’s relationships (with label)
 router.get('/', async (req, res) => {
+  const { person_id } = req.query;
   try {
-    const { person_id } = req.query;
-    let sql = `
-      SELECT rt.*
-        FROM relationship_tags AS rt
-        JOIN relationships   AS r
-          ON rt.relationship_id = r.relationship_id
-    `;
-    const params = [];
-    if (person_id) {
-      sql += ` WHERE r.person_id = ?`;
-      params.push(person_id);
-    }
-    const [rows] = await db.query(sql, params);
+    const [rows] = await db.query(
+      `SELECT 
+         rt.relationship_id,
+         rt.tag_id,
+         t.label
+       FROM relationship_tags AS rt
+       JOIN relationships   AS r
+         ON rt.relationship_id = r.relationship_id
+       JOIN tags            AS t
+         ON rt.tag_id          = t.tag_id
+       WHERE r.person_id = ?`,
+      [person_id]
+    );
     res.json(rows);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Failed to fetch tags.');
+    res.status(500).json({ message: 'Failed to fetch tags.' });
   }
 });
 
 // REMOVE tag
-// DELETE /relationship-tags
 router.delete('/', async (req, res) => {
   const { relationship_id, tag_id } = req.body;
   try {
@@ -59,7 +56,7 @@ router.delete('/', async (req, res) => {
     res.sendStatus(204);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Failed to remove tag.');
+    res.status(500).json({ message: 'Failed to remove tag.' });
   }
 });
 

@@ -115,8 +115,8 @@ export default function UserFormPage() {
           required
         >
           <option value="">— Select —</option>
-          <option value="F">Female</option>
-          <option value="M">Male</option>
+          <option value="Female">Female</option>
+          <option value="Male">Male</option>
           <option value="Other">Other</option>
         </select>
 

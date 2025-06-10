@@ -169,11 +169,12 @@ BEGIN
    WHERE rel_event_id = p_rel_event_id;
 END //
 
--- RELATIONSHIP TAGS
-DROP PROCEDURE IF EXISTS CreateRelationshipTag;
+-- RELATIONSHIP TAGS (Assign/Delete)
+DROP PROCEDURE IF EXISTS AssignRelationshipTag;
 DROP PROCEDURE IF EXISTS DeleteRelationshipTag;
 
-CREATE PROCEDURE CreateRelationshipTag(
+DELIMITER //
+CREATE PROCEDURE AssignRelationshipTag(
   IN p_relationship_id INT,
   IN p_tag_id          INT
 )
@@ -191,5 +192,44 @@ BEGIN
    WHERE relationship_id = p_relationship_id
      AND tag_id = p_tag_id;
 END //
+DELIMITER ;
 
+-- RELATIONSHIP EVENTS (Create/Update/Delete)
+DROP PROCEDURE IF EXISTS CreateRelationshipEvent;
+DROP PROCEDURE IF EXISTS UpdateRelationshipEvent;
+DROP PROCEDURE IF EXISTS DeleteRelationshipEvent;
+
+DELIMITER //
+CREATE PROCEDURE CreateRelationshipEvent(
+  IN p_relationship_id INT,
+  IN p_event_type      VARCHAR(100),
+  IN p_event_desc      TEXT,
+  IN p_event_date      DATE
+)
+BEGIN
+  INSERT INTO relationship_events (relationship_id, event_type, event_desc, event_date)
+  VALUES (p_relationship_id, p_event_type, p_event_desc, p_event_date);
+END //
+
+CREATE PROCEDURE UpdateRelationshipEvent(
+  IN p_rel_event_id    INT,
+  IN p_event_type      VARCHAR(100),
+  IN p_event_desc      TEXT,
+  IN p_event_date      DATE
+)
+BEGIN
+  UPDATE relationship_events
+     SET event_type = p_event_type,
+         event_desc = p_event_desc,
+         event_date = p_event_date
+   WHERE rel_event_id = p_rel_event_id;
+END //
+
+CREATE PROCEDURE DeleteRelationshipEvent(
+  IN p_rel_event_id INT
+)
+BEGIN
+  DELETE FROM relationship_events
+   WHERE rel_event_id = p_rel_event_id;
+END //
 DELIMITER ;

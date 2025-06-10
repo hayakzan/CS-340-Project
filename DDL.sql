@@ -4,8 +4,9 @@
     Last Updated: 06/09/2025
 */
 
--- Stored Procedure: Resets schema and sample data
 DELIMITER //
+
+-- Resets schema and sample data
 DROP PROCEDURE IF EXISTS ResetRelationshipTracker;
 CREATE PROCEDURE ResetRelationshipTracker()
 BEGIN
@@ -131,10 +132,93 @@ BEGIN
       (1, 1),
       (2, 2),
       (3, 3);
+
 END //
+
+-- Stored Procedures for users
+DROP PROCEDURE IF EXISTS CreateUser;
+CREATE PROCEDURE CreateUser(
+  IN p_name      VARCHAR(255),
+  IN p_username  VARCHAR(255),
+  IN p_dob       DATE,
+  IN p_gender    VARCHAR(50)
+)
+BEGIN
+  INSERT INTO users (name, username, dob, gender)
+  VALUES (p_name, p_username, p_dob, p_gender);
+END //
+
+DROP PROCEDURE IF EXISTS UpdateUser;
+CREATE PROCEDURE UpdateUser(
+  IN p_user_id   INT,
+  IN p_name      VARCHAR(255),
+  IN p_username  VARCHAR(255),
+  IN p_dob       DATE,
+  IN p_gender    VARCHAR(50)
+)
+BEGIN
+  UPDATE users
+     SET name     = p_name,
+         username = p_username,
+         dob      = p_dob,
+         gender   = p_gender
+   WHERE user_id = p_user_id;
+END //
+
+DROP PROCEDURE IF EXISTS DeleteUser;
+CREATE PROCEDURE DeleteUser(
+  IN p_user_id   INT
+)
+BEGIN
+  DELETE FROM users
+   WHERE user_id = p_user_id;
+END //
+
+-- Stored Procedures for people
+DROP PROCEDURE IF EXISTS CreatePerson;
+CREATE PROCEDURE CreatePerson(
+  IN p_user_id INT,
+  IN p_name    VARCHAR(255),
+  IN p_phone   VARCHAR(15),
+  IN p_email   VARCHAR(255),
+  IN p_dob     DATE,
+  IN p_gender  VARCHAR(50)
+)
+BEGIN
+  INSERT INTO people (user_id, name, phone, email, dob, gender)
+  VALUES (p_user_id, p_name, p_phone, p_email, p_dob, p_gender);
+END //
+
+DROP PROCEDURE IF EXISTS UpdatePerson;
+CREATE PROCEDURE UpdatePerson(
+  IN p_people_id INT,
+  IN p_name      VARCHAR(255),
+  IN p_phone     VARCHAR(15),
+  IN p_email     VARCHAR(255),
+  IN p_dob       DATE,
+  IN p_gender    VARCHAR(50)
+)
+BEGIN
+  UPDATE people
+     SET name   = p_name,
+         phone  = p_phone,
+         email  = p_email,
+         dob    = p_dob,
+         gender = p_gender
+   WHERE people_id = p_people_id;
+END //
+
+DROP PROCEDURE IF EXISTS DeletePerson;
+CREATE PROCEDURE DeletePerson(
+  IN p_people_id INT
+)
+BEGIN
+  DELETE FROM people WHERE people_id = p_people_id;
+END //
+
 DELIMITER ;
 
--- Raw schema definitions (no data or procedures)
+-- Raw schema definitions (optional, for reference only; not needed if you use the Reset proc)
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS relationship_tags;
@@ -153,7 +237,6 @@ CREATE TABLE users (
   created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (user_id)
 );
-
 
 CREATE TABLE people (
   people_id  INT(11)      NOT NULL AUTO_INCREMENT,
@@ -220,4 +303,3 @@ CREATE TABLE relationship_tags (
 
 SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;
-

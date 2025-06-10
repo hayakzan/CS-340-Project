@@ -3,7 +3,7 @@ const express = require('express');
 const router  = express.Router();
 const db      = require('../db-connector');
 
-// ASSIGN tag (now procedure-based)
+// ASSIGN tag 
 router.post('/', async (req, res) => {
   const { relationship_id, tag_id } = req.body;
   try {
@@ -18,7 +18,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// READ all tags for a person’s relationships (unchanged)
+// READ all tags for a person’s relationships
 router.get('/', async (req, res) => {
   const { person_id } = req.query;
   try {
@@ -42,7 +42,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// REMOVE tag (now procedure-based)
+// REMOVE tag 
 router.delete('/', async (req, res) => {
   const { relationship_id, tag_id } = req.body;
   try {

@@ -62,7 +62,7 @@ BEGIN
 END //
 
 CREATE PROCEDURE UpdatePerson(
-  IN p_person_id INT,
+  IN p_people_id INT,
   IN p_name      VARCHAR(255),
   IN p_phone     VARCHAR(50),
   IN p_email     VARCHAR(255),
@@ -71,20 +71,20 @@ CREATE PROCEDURE UpdatePerson(
 )
 BEGIN
   UPDATE people
-     SET name  = p_name,
-         phone = p_phone,
-         email = p_email,
-         dob   = p_dob,
-         gender= p_gender
-   WHERE person_id = p_person_id;
+     SET name   = p_name,
+         phone  = p_phone,
+         email  = p_email,
+         dob    = p_dob,
+         gender = p_gender
+   WHERE people_id = p_people_id;
 END //
 
 CREATE PROCEDURE DeletePerson(
-  IN p_person_id INT
+  IN p_people_id INT
 )
 BEGIN
   DELETE FROM people
-   WHERE person_id = p_person_id;
+   WHERE people_id = p_people_id;
 END //
 
 -- RELATIONSHIPS
@@ -143,7 +143,7 @@ CREATE PROCEDURE CreateEvent(
   IN p_event_date      DATE
 )
 BEGIN
-  INSERT INTO events (relationship_id, event_type, event_desc, event_date)
+  INSERT INTO relationship_events (relationship_id, event_type, event_desc, event_date)
   VALUES (p_relationship_id, p_event_type, p_event_desc, p_event_date);
 END //
 
@@ -154,7 +154,7 @@ CREATE PROCEDURE UpdateEvent(
   IN p_event_date      DATE
 )
 BEGIN
-  UPDATE events
+  UPDATE relationship_events
      SET event_type = p_event_type,
          event_desc = p_event_desc,
          event_date = p_event_date
@@ -165,7 +165,7 @@ CREATE PROCEDURE DeleteEvent(
   IN p_rel_event_id INT
 )
 BEGIN
-  DELETE FROM events
+  DELETE FROM relationship_events
    WHERE rel_event_id = p_rel_event_id;
 END //
 

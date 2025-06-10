@@ -1,4 +1,4 @@
-// frontend/src/pages/NavBar.jsx
+// src/pages/NavBar.jsx
 import { Link, useLocation } from 'react-router-dom';
 
 export default function NavBar() {
@@ -44,7 +44,6 @@ export default function NavBar() {
       >
         Users
       </Link>
-      {/* Add more links if you want */}
     </nav>
   );
 }

@@ -4,17 +4,15 @@ const router  = express.Router();
 const db      = require('../db-connector');
 
 // CREATE event
-// POST /events
 router.post('/', async (req, res) => {
   const { relationship_id, event_type, event_desc, event_date } = req.body;
   try {
     const [result] = await db.query(
-      `INSERT INTO relationship_events
-         (relationship_id, event_type, event_desc, event_date)
-       VALUES (?, ?, ?, ?)`,
+      `CALL CreateRelationshipEvent(?, ?, ?, ?)`,
       [relationship_id, event_type, event_desc || null, event_date]
     );
-    res.status(201).json({ rel_event_id: result.insertId });
+    const insertId = result[0]?.insertId || result[0]?.[0]?.insertId;
+    res.status(201).json({ rel_event_id: insertId });
   } catch (err) {
     console.error(err);
     res.status(500).send('Failed to create event.');
@@ -22,7 +20,6 @@ router.post('/', async (req, res) => {
 });
 
 // READ all (or by person_id)
-// GET /events?person_id=…
 router.get('/', async (req, res) => {
   try {
     const { person_id } = req.query;
@@ -46,22 +43,14 @@ router.get('/', async (req, res) => {
 });
 
 // UPDATE event
-// PUT /events/:id
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { event_type, event_desc, event_date } = req.body;
   try {
-    const [result] = await db.query(
-      `UPDATE relationship_events
-         SET event_type = ?,
-             event_desc = ?,
-             event_date = ?
-       WHERE rel_event_id = ?`,
-      [event_type, event_desc || null, event_date, id]
+    await db.query(
+      `CALL UpdateRelationshipEvent(?, ?, ?, ?)`,
+      [id, event_type, event_desc || null, event_date]
     );
-    if (result.affectedRows === 0) {
-      return res.status(404).send('Event not found');
-    }
     res.sendStatus(204);
   } catch (err) {
     console.error(err);
@@ -70,17 +59,13 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE event
-// DELETE /events/:id
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const [result] = await db.query(
-      `DELETE FROM relationship_events WHERE rel_event_id = ?`,
+    await db.query(
+      `CALL DeleteRelationshipEvent(?)`,
       [id]
     );
-    if (result.affectedRows === 0) {
-      return res.status(404).send('Event not found');
-    }
     res.sendStatus(204);
   } catch (err) {
     console.error(err);

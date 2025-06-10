@@ -4,25 +4,23 @@ const router  = express.Router();
 const db      = require('../db-connector');
 
 // CREATE relationship
-// POST /relationships
 router.post('/', async (req, res) => {
-  const { person_id, rel_type, status, started_at, end_at, notes } = req.body;
+  const { person_id, rel_type, status, started_at, ended_at, notes } = req.body;
   try {
     const [result] = await db.query(
-      `INSERT INTO relationships
-         (person_id, rel_type, status, started_at, ended_at, notes)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [person_id, rel_type, status, started_at || null, end_at || null, notes || null]
+      `CALL CreateRelationship(?, ?, ?, ?, ?, ?)`,
+      [person_id, rel_type, status, started_at || null, ended_at || null, notes || null]
     );
-    res.status(201).json({ relationship_id: result.insertId });
+    // MySQL stored procedure insertId is usually at result[0][0].insertId or result[0].insertId
+    const insertId = result[0]?.insertId || result[0]?.[0]?.insertId;
+    res.status(201).json({ relationship_id: insertId });
   } catch (err) {
     console.error(err);
     res.status(500).send('Failed to create relationship.');
   }
 });
 
-// READ all (or by person_id)
-// GET /relationships?person_id=…
+// READ all (or by person_id) — UNCHANGED
 router.get('/', async (req, res) => {
   try {
     const { person_id } = req.query;
@@ -41,24 +39,14 @@ router.get('/', async (req, res) => {
 });
 
 // UPDATE relationship
-// PUT /relationships/:id
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { rel_type, status, started_at, end_at, notes } = req.body;
+  const { rel_type, status, started_at, ended_at, notes } = req.body;
   try {
-    const [result] = await db.query(
-      `UPDATE relationships
-         SET rel_type   = ?,
-             status     = ?,
-             started_at = ?,
-             ended_at   = ?,
-             notes      = ?
-       WHERE relationship_id = ?`,
-      [rel_type, status, started_at || null, end_at || null, notes || null, id]
+    await db.query(
+      `CALL UpdateRelationship(?, ?, ?, ?, ?, ?)`,
+      [id, rel_type, status, started_at || null, ended_at || null, notes || null]
     );
-    if (result.affectedRows === 0) {
-      return res.status(404).send('Relationship not found');
-    }
     res.sendStatus(204);
   } catch (err) {
     console.error(err);
@@ -67,17 +55,13 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE relationship
-// DELETE /relationships/:id
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const [result] = await db.query(
-      `DELETE FROM relationships WHERE relationship_id = ?`,
+    await db.query(
+      `CALL DeleteRelationship(?)`,
       [id]
     );
-    if (result.affectedRows === 0) {
-      return res.status(404).send('Relationship not found');
-    }
     res.sendStatus(204);
   } catch (err) {
     console.error(err);

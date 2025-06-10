@@ -14,7 +14,6 @@ export default function UsersPage() {
   });
   const navigate = useNavigate();
 
-  // Fetch & refresh  
   const fetchUsers = () =>
     fetch(`${BASE}/users`)
       .then(res => res.json())
@@ -25,7 +24,6 @@ export default function UsersPage() {
     fetchUsers();
   }, []);
 
-  // Form handlers
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
@@ -41,7 +39,6 @@ export default function UsersPage() {
     fetchUsers();
   }
 
-  // Row actions
   async function handleDelete(id) {
     if (!window.confirm('Delete this user and all related data?')) return;
     await fetch(`${BASE}/users/${id}`, { method: 'DELETE' });
@@ -56,7 +53,6 @@ export default function UsersPage() {
     navigate(`/users/${id}/people`);
   }
 
-  // Reset data
   const handleResetAll = async () => {
     try {
       const res = await fetch(`${BASE}/reset/reset-all`);
@@ -73,14 +69,12 @@ export default function UsersPage() {
     <div style={{ padding: '1em' }}>
       <h2>Select a User</h2>
 
-      {/* Reset control */}
       <div style={{ marginBottom: '1em' }}>
         <button onClick={handleResetAll} className="button">
           Reset All Data
         </button>
       </div>
 
-      {/* Add-User form */}
       <form onSubmit={handleAdd} style={{ marginBottom: '1em' }}>
         <input
           name="name"
@@ -102,34 +96,37 @@ export default function UsersPage() {
           value={form.dob}
           onChange={handleChange}
         />
-        <input
+        <select
           name="gender"
-          placeholder="Gender"
           value={form.gender}
           onChange={handleChange}
-        />
+          required
+        >
+          <option value="">Select Gender</option>
+          <option value="Female">Female</option>
+          <option value="Male">Male</option>
+          <option value="Other">Other</option>
+        </select>
         <button type="submit" className="button">
           Add User
         </button>
       </form>
 
-      {/* User list */}
-      <ul>
+      <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
         {users.map(u => (
           <li key={u.user_id} style={{ marginBottom: '0.5em' }}>
-            <strong>{u.name}</strong> — {u.username} |{' '}
-            <button
-              onClick={() => handleManagePeople(u.user_id)}
-              className="button"
-            >
-              Manage People
-            </button>{' '}
-            <button onClick={() => handleEdit(u.user_id)} className="button">
-              Edit
-            </button>{' '}
-            <button onClick={() => handleDelete(u.user_id)} className="button">
-              Delete
-            </button>
+            <div style={{ marginBottom: '0.5em' }}>
+              <strong>{u.name}</strong> — {u.username}{' '}
+              <button onClick={() => handleEdit(u.user_id)} className="button" style={{ marginLeft: '0.5em' }}>
+                Edit
+              </button>{' '}
+              <button onClick={() => handleDelete(u.user_id)} className="button" style={{ marginLeft: '0.5em' }}>
+                Delete
+              </button>{' '}
+              <button onClick={() => handleManagePeople(u.user_id)} className="button" style={{ marginLeft: '0.5em' }}>
+                Manage People
+              </button>
+            </div>
           </li>
         ))}
       </ul>

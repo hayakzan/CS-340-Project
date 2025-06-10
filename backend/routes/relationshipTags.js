@@ -3,13 +3,12 @@ const express = require('express');
 const router  = express.Router();
 const db      = require('../db-connector');
 
-// ASSIGN tag
+// ASSIGN tag (now procedure-based)
 router.post('/', async (req, res) => {
   const { relationship_id, tag_id } = req.body;
   try {
     await db.query(
-      `INSERT INTO relationship_tags (relationship_id, tag_id)
-       VALUES (?, ?)`,
+      `CALL AssignRelationshipTag(?, ?)`,
       [relationship_id, tag_id]
     );
     res.status(201).json({ message: 'Tag assigned.' });
@@ -19,7 +18,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// READ all tags for a person’s relationships (with label)
+// READ all tags for a person’s relationships (unchanged)
 router.get('/', async (req, res) => {
   const { person_id } = req.query;
   try {
@@ -43,14 +42,12 @@ router.get('/', async (req, res) => {
   }
 });
 
-// REMOVE tag
+// REMOVE tag (now procedure-based)
 router.delete('/', async (req, res) => {
   const { relationship_id, tag_id } = req.body;
   try {
     await db.query(
-      `DELETE FROM relationship_tags
-       WHERE relationship_id = ?
-         AND tag_id          = ?`,
+      `CALL RemoveRelationshipTag(?, ?)`,
       [relationship_id, tag_id]
     );
     res.sendStatus(204);

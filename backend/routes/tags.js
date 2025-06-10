@@ -3,15 +3,11 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db-connector');
 
-// CREATE a new tag
+// CREATE a new tag (now using procedure)
 router.post('/', async (req, res) => {
   const { user_id, name, color } = req.body;
   try {
-    await db.query(
-      `INSERT INTO tags (user_id, name, color)
-       VALUES (?, ?, ?)`,
-      [user_id, name, color]
-    );
+    await db.query('CALL CreateTag(?, ?, ?)', [user_id, name, color]);
     res.status(201).send('Tag created.');
   } catch (err) {
     console.error(err);
@@ -19,7 +15,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// READ all tags
+// READ all tags (still just a query)
 router.get('/', async (req, res) => {
   try {
     const { user_id } = req.query;
@@ -35,16 +31,12 @@ router.get('/', async (req, res) => {
   }
 });
 
-
-// UPDATE a tag
+// UPDATE a tag (now using procedure)
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { name, color } = req.body;
   try {
-    await db.query(
-      `UPDATE tags SET name = ?, color = ? WHERE tag_id = ?`,
-      [name, color, id]
-    );
+    await db.query('CALL UpdateTag(?, ?, ?)', [id, name, color]);
     res.status(200).send('Tag updated.');
   } catch (err) {
     console.error(err);
@@ -52,11 +44,11 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE a tag
+// DELETE a tag (now using procedure)
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    await db.query(`DELETE FROM tags WHERE tag_id = ?`, [id]);
+    await db.query('CALL DeleteTag(?)', [id]);
     res.status(200).send('Tag deleted.');
   } catch (err) {
     console.error(err);

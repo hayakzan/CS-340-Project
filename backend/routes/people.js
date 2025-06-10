@@ -8,13 +8,14 @@ const db      = require('../db-connector');
 router.post('/', async (req, res) => {
   const { user_id, name, phone, email, dob, gender } = req.body;
   try {
+    // CALL the stored procedure
     const [ result ] = await db.query(
-      `INSERT INTO people
-         (user_id, name, phone, email, dob, gender)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+      `CALL CreatePerson(?, ?, ?, ?, ?, ?)`,
       [user_id, name, phone, email, dob, gender]
     );
-    res.status(201).json({ people_id: result.insertId });
+    
+    const insertId = result[0]?.insertId || result[0]?.[0]?.insertId;
+    res.status(201).json({ people_id: insertId });
   } catch (err) {
     console.error(err);
     res.status(500).send('Failed to create person.');
@@ -22,7 +23,6 @@ router.post('/', async (req, res) => {
 });
 
 // 2) READ all people (or by user_id)
-// GET /people?user_id=…
 router.get('/', async (req, res) => {
   try {
     const { user_id } = req.query;
@@ -39,14 +39,11 @@ router.get('/', async (req, res) => {
 });
 
 // 3) READ one person by ID
-// GET /people/:id
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const [ rows ] = await db.query(
-      `SELECT * 
-         FROM people
-        WHERE people_id = ?`,
+      `SELECT * FROM people WHERE people_id = ?`,
       [ id ]
     );
     if (rows.length === 0) {
@@ -60,24 +57,16 @@ router.get('/:id', async (req, res) => {
 });
 
 // 4) UPDATE a person
-// PUT /people/:id
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { name, phone, email, dob, gender } = req.body;
   try {
+    // CALL the stored procedure
     const [ result ] = await db.query(
-      `UPDATE people
-         SET name   = ?,
-             phone  = ?,
-             email  = ?,
-             dob    = ?,
-             gender = ?
-       WHERE people_id = ?`,
-      [ name, phone, email, dob, gender, id ]
+      `CALL UpdatePerson(?, ?, ?, ?, ?, ?)`,
+      [ id, name, phone, email, dob, gender ]
     );
-    if (result.affectedRows === 0) {
-      return res.status(404).send('Person not found');
-    }
+    
     res.sendStatus(204);
   } catch (err) {
     console.error(err);
@@ -86,17 +75,14 @@ router.put('/:id', async (req, res) => {
 });
 
 // 5) DELETE a person
-// DELETE /people/:id
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
+    // CALL the stored procedure
     const [ result ] = await db.query(
-      `DELETE FROM people WHERE people_id = ?`,
+      `CALL DeletePerson(?)`,
       [ id ]
     );
-    if (result.affectedRows === 0) {
-      return res.status(404).send('Person not found');
-    }
     res.sendStatus(204);
   } catch (err) {
     console.error(err);

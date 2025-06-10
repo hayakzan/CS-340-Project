@@ -8,11 +8,9 @@ export default function PersonDetailsPage() {
   const { personId } = useParams()
   const navigate     = useNavigate()
 
-  // primary data
   const [person,        setPerson]        = useState({})
   const [relationships, setRelationships] = useState([])
   const [events,        setEvents]        = useState([])
-  // tags
   const [assignedTags,  setAssignedTags]  = useState([])
   const [newPersonTag,  setNewPersonTag]  = useState('')
 
@@ -22,77 +20,44 @@ export default function PersonDetailsPage() {
     { tag_id: 3, label: 'Peripheral' }
   ]
 
-  // fetch functions
-  const reloadRels = () =>
-    fetch(`${BASE}/relationships?person_id=${personId}`)
-      .then(r => r.json()).then(setRelationships).catch(console.error)
+  const reloadRels = () => fetch(`${BASE}/relationships?person_id=${personId}`).then(r => r.json()).then(setRelationships).catch(console.error)
+  const reloadEvts = () => fetch(`${BASE}/events?person_id=${personId}`).then(r => r.json()).then(setEvents).catch(console.error)
+  const reloadTags = () => fetch(`${BASE}/relationship-tags?person_id=${personId}`).then(r => r.json()).then(setAssignedTags).catch(console.error)
 
-  const reloadEvts = () =>
-    fetch(`${BASE}/events?person_id=${personId}`)
-      .then(r => r.json()).then(setEvents).catch(console.error)
-
-  const reloadTags = () =>
-    fetch(`${BASE}/relationship-tags?person_id=${personId}`)
-      .then(r => r.json()).then(setAssignedTags).catch(console.error)
-
-  // initial load
   useEffect(() => {
-    fetch(`${BASE}/people/${personId}`)
-      .then(r => r.json()).then(setPerson).catch(console.error)
+    fetch(`${BASE}/people/${personId}`).then(r => r.json()).then(setPerson).catch(console.error)
     reloadRels()
     reloadEvts()
     reloadTags()
   }, [BASE, personId])
 
-  // — Tag assignment (single tag) —
   async function handleAssignPersonTag(e) {
     e.preventDefault()
     const relId  = relationships[0]?.relationship_id
     const newTag = Number(newPersonTag)
     if (!relId || !newTag) return
 
-    // remove old tag
     if (assignedTags.length) {
       await fetch(`${BASE}/relationship-tags`, {
         method:  'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          relationship_id: relId,
-          tag_id:          assignedTags[0].tag_id
-        })
+        body: JSON.stringify({ relationship_id: relId, tag_id: assignedTags[0].tag_id })
       })
     }
 
-    // add new tag
     await fetch(`${BASE}/relationship-tags`, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        relationship_id: relId,
-        tag_id:          newTag
-      })
+      body: JSON.stringify({ relationship_id: relId, tag_id: newTag })
     })
 
     setNewPersonTag('')
     reloadTags()
   }
 
-  // — Relationships CRUD —
-  const [newRel,    setNewRel]    = useState({
-    rel_type:   '',
-    status:     'Active',
-    started_at: '',
-    ended_at:   '',
-    notes:      ''
-  })
+  const [newRel,    setNewRel]    = useState({ rel_type: '', status: 'Active', started_at: '', ended_at: '', notes: '' })
   const [editRelId, setEditRelId] = useState(null)
-  const [editRel,   setEditRel]   = useState({
-    rel_type:   '',
-    status:     'Active',
-    started_at: '',
-    ended_at:   '',
-    notes:      ''
-  })
+  const [editRel,   setEditRel]   = useState({ rel_type: '', status: 'Active', started_at: '', ended_at: '', notes: '' })
 
   function handleChangeNewRel(e)  { setNewRel(r => ({ ...r, [e.target.name]: e.target.value })) }
   function handleChangeEditRel(e) { setEditRel(r => ({ ...r, [e.target.name]: e.target.value })) }
@@ -102,13 +67,7 @@ export default function PersonDetailsPage() {
     await fetch(`${BASE}/relationships`, {
       method:'POST',
       headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({
-        person_id: personId,
-        ...newRel,
-        started_at: newRel.started_at || null,
-        ended_at:   newRel.ended_at   || null,
-        notes:      newRel.notes      || null
-      })
+      body: JSON.stringify({ person_id: personId, ...newRel, started_at: newRel.started_at || null, ended_at: newRel.ended_at || null, notes: newRel.notes || null })
     })
     setNewRel({ rel_type:'', status:'Active', started_at:'', ended_at:'', notes:'' })
     reloadRels()
@@ -116,13 +75,7 @@ export default function PersonDetailsPage() {
 
   function startEditRel(r) {
     setEditRelId(r.relationship_id)
-    setEditRel({
-      rel_type:   r.rel_type,
-      status:     r.status,
-      started_at: r.started_at?.slice(0,10) || '',
-      ended_at:   r.ended_at?.slice(0,10)   || '',
-      notes:      r.notes  || ''
-    })
+    setEditRel({ rel_type: r.rel_type, status: r.status, started_at: r.started_at?.slice(0,10) || '', ended_at: r.ended_at?.slice(0,10) || '', notes: r.notes || '' })
   }
   function cancelEditRel() { setEditRelId(null) }
 
@@ -131,12 +84,7 @@ export default function PersonDetailsPage() {
     await fetch(`${BASE}/relationships/${editRelId}`, {
       method:'PUT',
       headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({
-        ...editRel,
-        started_at: editRel.started_at || null,
-        ended_at:   editRel.ended_at   || null,
-        notes:      editRel.notes      || null
-      })
+      body: JSON.stringify({ ...editRel, started_at: editRel.started_at || null, ended_at: editRel.ended_at || null, notes: editRel.notes || null })
     })
     setEditRelId(null)
     reloadRels()
@@ -148,19 +96,9 @@ export default function PersonDetailsPage() {
     reloadRels()
   }
 
-  // — Events CRUD —
-  const [newEvt,    setNewEvt]    = useState({
-    relationship_id: '',
-    event_type:      '',
-    event_desc:      '',
-    event_date:      ''
-  })
+  const [newEvt,    setNewEvt]    = useState({ relationship_id: '', event_type: '', event_desc: '', event_date: '' })
   const [editEvtId, setEditEvtId] = useState(null)
-  const [editEvt,   setEditEvt]   = useState({
-    event_type: '',
-    event_desc: '',
-    event_date: ''
-  })
+  const [editEvt,   setEditEvt]   = useState({ event_type: '', event_desc: '', event_date: '' })
 
   function handleChangeNewEvt(e)   { setNewEvt(n => ({ ...n, [e.target.name]: e.target.value })) }
   function handleChangeEditEvt(e)  { setEditEvt(ev => ({ ...ev, [e.target.name]: e.target.value })) }
@@ -178,11 +116,7 @@ export default function PersonDetailsPage() {
 
   function startEditEvt(ev) {
     setEditEvtId(ev.rel_event_id)
-    setEditEvt({
-      event_type: ev.event_type,
-      event_desc: ev.event_desc,
-      event_date: ev.event_date.slice(0,10)
-    })
+    setEditEvt({ event_type: ev.event_type, event_desc: ev.event_desc, event_date: ev.event_date.slice(0,10) })
   }
   function cancelEditEvt() { setEditEvtId(null) }
 
@@ -204,19 +138,24 @@ export default function PersonDetailsPage() {
   }
 
   return (
-    <div style={{ padding:16, maxWidth:600 }}>
-      <button onClick={() => navigate(-1)}>← Back to People</button>
-      <button
-        style={{ float:'right' }}
-        onClick={async () => {
-          await fetch(`${BASE}/reset/reset-all`)
-          fetch(`${BASE}/people/${personId}`)
-            .then(r => r.json()).then(setPerson)
-          reloadRels(); reloadEvts(); reloadTags()
-        }}
-      >
-        Reset All Data
-      </button>
+    <div style={{ padding:16, maxWidth:1200, margin:'0 auto' }}>
+      <div style={{ marginBottom:'1em', display:'flex', alignItems:'center' }}>
+        <button style={{ whiteSpace: 'nowrap' }} onClick={() => navigate(-1)} className="button">
+          ← Back to People
+        </button>
+        <div style={{ width: '24em' }}></div>
+        <button
+          style={{ whiteSpace: 'nowrap' }}
+          className="button"
+          onClick={async () => {
+            await fetch(`${BASE}/reset/reset-all`)
+            fetch(`${BASE}/people/${personId}`).then(r => r.json()).then(setPerson)
+            reloadRels(); reloadEvts(); reloadTags()
+          }}
+        >
+          Reset All Data
+        </button>
+      </div>
 
       <div style={{ margin:'16px 0' }}>
         <h2 style={{ display:'inline-block', marginRight:12 }}>
@@ -234,11 +173,7 @@ export default function PersonDetailsPage() {
           )
         })}
         <form onSubmit={handleAssignPersonTag} style={{ display:'inline-flex', gap:8 }}>
-          <select
-            value={newPersonTag}
-            onChange={e => setNewPersonTag(e.target.value)}
-            required
-          >
+          <select value={newPersonTag} onChange={e => setNewPersonTag(e.target.value)} required>
             <option value="">— choose tag —</option>
             {TAG_OPTIONS.map(t => (
               <option key={t.tag_id} value={t.tag_id}>{t.label}</option>
@@ -257,231 +192,260 @@ export default function PersonDetailsPage() {
       {/* Relationships */}
       <section style={{ marginBottom:'2em' }}>
         <h3>Relationships</h3>
-        <form
-          onSubmit={handleAddRel}
-          style={{ margin:'8px 0', display:'flex', gap:'0.5em', alignItems:'flex-end' }}
-        >
-          <input
-            name="rel_type"
-            placeholder="Type (e.g. Friend)"
-            value={newRel.rel_type}
-            onChange={handleChangeNewRel}
-            required
-          />
-          <select
-            name="status"
-            value={newRel.status}
-            onChange={handleChangeNewRel}
-            required
+        <div style={{
+          background: '#fff',
+          borderRadius: '12px',
+          boxShadow: '0 1px 8px #0001',
+          padding: '1.5em',
+          marginBottom: '1.5em',
+          maxWidth: '1000px',
+          width: '100%',
+        }}>
+          <form
+            onSubmit={handleAddRel}
+            style={{ margin:'8px 0', display:'flex', gap:'1em', alignItems:'flex-end', flexWrap:'nowrap' }}
           >
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-            <option value="Idle">Idle</option>
-          </select>
-          <div style={{ display:'flex', flexDirection:'column', fontSize:'0.8em' }}>
-            <span>Start</span>
             <input
-              name="started_at"
-              type="date"
-              value={newRel.started_at}
+              name="rel_type"
+              placeholder="Type (e.g. Friend)"
+              value={newRel.rel_type}
               onChange={handleChangeNewRel}
+              required
+              style={{ flex: 1, minWidth: 0 }}
             />
-          </div>
-          <div style={{ display:'flex', flexDirection:'column', fontSize:'0.8em' }}>
-            <span>End</span>
+            <select
+              name="status"
+              value={newRel.status}
+              onChange={handleChangeNewRel}
+              required
+              style={{ flex: 1, minWidth: 0 }}
+            >
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+              <option value="Idle">Idle</option>
+            </select>
+            <div style={{ display:'flex', flexDirection:'column', fontSize:'0.8em', flex: 1, minWidth: 0 }}>
+              <span>Start</span>
+              <input
+                name="started_at"
+                type="date"
+                value={newRel.started_at}
+                onChange={handleChangeNewRel}
+                style={{ flex: 1, minWidth: 0 }}
+              />
+            </div>
+            <div style={{ display:'flex', flexDirection:'column', fontSize:'0.8em', flex: 1, minWidth: 0 }}>
+              <span>End</span>
+              <input
+                name="ended_at"
+                type="date"
+                value={newRel.ended_at}
+                onChange={handleChangeNewRel}
+                style={{ flex: 1, minWidth: 0 }}
+              />
+            </div>
             <input
-              name="ended_at"
-              type="date"
-              value={newRel.ended_at}
+              name="notes"
+              placeholder="Notes"
+              value={newRel.notes}
               onChange={handleChangeNewRel}
+              style={{ flex: 2, minWidth: 0 }}
             />
-          </div>
-          <input
-            name="notes"
-            placeholder="Notes"
-            value={newRel.notes}
-            onChange={handleChangeNewRel}
-          />
-          <button type="submit" className="button">Add</button>
-        </form>
+            <button type="submit" className="button">Add</button>
+          </form>
 
-        {relationships.length === 0
-          ? <p style={{ fontStyle:'italic' }}>No relationships found.</p>
-          : (
-            <ul style={{ paddingLeft:0, listStyle:'none' }}>
-              {relationships.map(r => (
-                <li key={r.relationship_id} style={{ marginBottom:'0.5em' }}>
-                  {editRelId === r.relationship_id ? (
-                    <form
-                      onSubmit={submitEditRel}
-                      style={{ display:'flex', flexWrap:'wrap', gap:'0.5em', alignItems:'flex-end' }}
-                    >
-                      <input
-                        name="rel_type"
-                        value={editRel.rel_type}
-                        onChange={handleChangeEditRel}
-                      />
-                      <select
-                        name="status"
-                        value={editRel.status}
-                        onChange={handleChangeEditRel}
+          {relationships.length === 0
+            ? <p style={{ fontStyle:'italic' }}>No relationships found.</p>
+            : (
+              <ul style={{ paddingLeft:0, listStyle:'none' }}>
+                {relationships.map(r => (
+                  <li key={r.relationship_id} style={{ marginBottom:'0.5em' }}>
+                    {editRelId === r.relationship_id ? (
+                      <form
+                        onSubmit={submitEditRel}
+                        style={{ display:'flex', flexWrap:'wrap', gap:'0.5em', alignItems:'flex-end' }}
                       >
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                        <option value="Idle">Idle</option>
-                      </select>
-                      <div style={{ display:'flex', flexDirection:'column', fontSize:'0.8em' }}>
-                        <span>Start</span>
                         <input
-                          name="started_at"
-                          type="date"
-                          value={editRel.started_at}
+                          name="rel_type"
+                          value={editRel.rel_type}
                           onChange={handleChangeEditRel}
                         />
-                      </div>
-                      <div style={{ display:'flex', flexDirection:'column', fontSize:'0.8em' }}>
-                        <span>End</span>
+                        <select
+                          name="status"
+                          value={editRel.status}
+                          onChange={handleChangeEditRel}
+                        >
+                          <option value="Active">Active</option>
+                          <option value="Inactive">Inactive</option>
+                          <option value="Idle">Idle</option>
+                        </select>
+                        <div style={{ display:'flex', flexDirection:'column', fontSize:'0.8em' }}>
+                          <span>Start</span>
+                          <input
+                            name="started_at"
+                            type="date"
+                            value={editRel.started_at}
+                            onChange={handleChangeEditRel}
+                          />
+                        </div>
+                        <div style={{ display:'flex', flexDirection:'column', fontSize:'0.8em' }}>
+                          <span>End</span>
+                          <input
+                            name="ended_at"
+                            type="date"
+                            value={editRel.ended_at}
+                            onChange={handleChangeEditRel}
+                          />
+                        </div>
                         <input
-                          name="ended_at"
-                          type="date"
-                          value={editRel.ended_at}
+                          name="notes"
+                          placeholder="Notes"
+                          value={editRel.notes}
                           onChange={handleChangeEditRel}
                         />
-                      </div>
-                      <input
-                        name="notes"
-                        placeholder="Notes"
-                        value={editRel.notes}
-                        onChange={handleChangeEditRel}
-                      />
-                      <button type="submit" className="button">Save</button>
-                      <button type="button" onClick={cancelEditRel} className="button">Cancel</button>
-                    </form>
-                  ) : (
-                    <>
-                      <span>
-                        <strong>Type:</strong> {r.rel_type} &nbsp;|&nbsp;
-                        <strong>Status:</strong> {r.status} &nbsp;|&nbsp;
-                        <strong>Since:</strong> {r.started_at?.slice(0,10)||'N/A'} &nbsp;|&nbsp;
-                        <em>{r.notes||''}</em>
-                      </span>{' '}
-                      <button onClick={()=>startEditRel(r)} className="button">Edit</button>{' '}
-                      <button onClick={()=>deleteRel(r.relationship_id)} className="button">Delete</button>
-                    </>
-                  )}
-                  <hr style={{ margin:'0.5em 0' }}/>
-                </li>
-              ))}
-            </ul>
-          )}
+                        <button type="submit" className="button">Save</button>
+                        <button type="button" onClick={cancelEditRel} className="button">Cancel</button>
+                      </form>
+                    ) : (
+                      <>
+                        <span style={{ whiteSpace: 'nowrap', display: 'block', overflowX: 'auto' }}>
+                          <strong>Type:</strong> {r.rel_type} &nbsp;|&nbsp;
+                          <strong>Status:</strong> {r.status} &nbsp;|&nbsp;
+                          <strong>Since:</strong> {r.started_at?.slice(0,10)||'N/A'} &nbsp;|&nbsp;
+                          <em>{r.notes||''}</em>
+                        </span>{' '}
+                        <button onClick={()=>startEditRel(r)} className="button">Edit</button>{' '}
+                        <button onClick={()=>deleteRel(r.relationship_id)} className="button">Delete</button>
+                      </>
+                    )}
+                    <hr style={{ margin:'0.5em 0' }}/>
+                  </li>
+                ))}
+              </ul>
+            )}
+        </div>
       </section>
 
       {/* Events */}
       <section>
         <h3>Events</h3>
-        <form
-          onSubmit={handleAddEvt}
-          style={{ margin:'8px 0', display:'flex', gap:'0.5em', alignItems:'center' }}
-        >
-          <select
-            name="relationship_id"
-            value={newEvt.relationship_id}
-            onChange={handleChangeNewEvt}
-            required
+        <div style={{
+          background: '#fff',
+          borderRadius: '12px',
+          boxShadow: '0 1px 8px #0001',
+          padding: '1.5em',
+          marginBottom: '1.5em',
+          maxWidth: '1000px',
+          width: '100%',
+        }}>
+          <form
+            onSubmit={handleAddEvt}
+            style={{ margin:'8px 0', display:'flex', gap:'1em', alignItems:'center', flexWrap:'nowrap' }}
           >
-            <option value="">— Select relationship —</option>
-            {relationships.map(r => (
-              <option key={r.relationship_id} value={r.relationship_id}>
-                {r.rel_type}
-              </option>
-            ))}
-          </select>
-          <input
-            name="event_type"
-            placeholder="Event Type"
-            value={newEvt.event_type}
-            onChange={handleChangeNewEvt}
-            required
-          />
-          <input
-            name="event_desc"
-            placeholder="Description"
-            value={newEvt.event_desc}
-            onChange={handleChangeNewEvt}
-          />
-          <input
-            name="event_date"
-            type="date"
-            value={newEvt.event_date}
-            onChange={handleChangeNewEvt}
-            required
-          />
-          <button type="submit" className="button">Add</button>
-        </form>
+            <select
+              name="relationship_id"
+              value={newEvt.relationship_id}
+              onChange={handleChangeNewEvt}
+              required
+              style={{ flex: 1, minWidth: 0 }}
+            >
+              <option value="">— Select relationship —</option>
+              {relationships.map(r => (
+                <option key={r.relationship_id} value={r.relationship_id}>
+                  {r.rel_type}
+                </option>
+              ))}
+            </select>
+            <input
+              name="event_type"
+              placeholder="Event Type"
+              value={newEvt.event_type}
+              onChange={handleChangeNewEvt}
+              required
+              style={{ flex: 1, minWidth: 0 }}
+            />
+            <input
+              name="event_desc"
+              placeholder="Description"
+              value={newEvt.event_desc}
+              onChange={handleChangeNewEvt}
+              style={{ flex: 2, minWidth: 0 }}
+            />
+            <input
+              name="event_date"
+              type="date"
+              value={newEvt.event_date}
+              onChange={handleChangeNewEvt}
+              required
+              style={{ flex: 1, minWidth: 0 }}
+            />
+            <button type="submit" className="button">Add</button>
+          </form>
 
-        {events.length === 0 ? (
-          <p style={{ fontStyle:'italic' }}>No events found.</p>
-        ) : (
-          <ul style={{ paddingLeft:0, listStyle:'none' }}>
-            {events.map(ev => {
-              const rel = relationships.find(r => r.relationship_id === ev.relationship_id)
-              return (
-                <li key={ev.rel_event_id} style={{ marginBottom:'0.5em' }}>
-                  {editEvtId === ev.rel_event_id ? (
-                    <form
-                      onSubmit={submitEditEvt}
-                      style={{ display:'flex', gap:'0.5em', alignItems:'center' }}
-                    >
-                      <select
-                        name="relationship_id"
-                        value={ev.relationship_id}
-                        onChange={handleChangeNewEvt}
-                        required
+          {events.length === 0 ? (
+            <p style={{ fontStyle:'italic' }}>No events found.</p>
+          ) : (
+            <ul style={{ paddingLeft:0, listStyle:'none' }}>
+              {events.map(ev => {
+                const rel = relationships.find(r => r.relationship_id === ev.relationship_id)
+                return (
+                  <li key={ev.rel_event_id} style={{ marginBottom:'0.5em' }}>
+                    {editEvtId === ev.rel_event_id ? (
+                      <form
+                        onSubmit={submitEditEvt}
+                        style={{ display:'flex', gap:'0.5em', alignItems:'center' }}
                       >
-                        <option value="">— Select relationship —</option>
-                        {relationships.map(r => (
-                          <option key={r.relationship_id} value={r.relationship_id}>
-                            {r.rel_type}
-                          </option>
-                        ))}
-                      </select>
-                      <input
-                        name="event_type"
-                        value={editEvt.event_type}
-                        onChange={handleChangeEditEvt}
-                      />
-                      <input
-                        name="event_desc"
-                        value={editEvt.event_desc}
-                        onChange={handleChangeEditEvt}
-                      />
-                      <input
-                        name="event_date"
-                        type="date"
-                        value={editEvt.event_date}
-                        onChange={handleChangeEditEvt}
-                      />
-                      <button type="submit" className="button">Save</button>
-                      <button type="button" onClick={cancelEditEvt} className="button">Cancel</button>
-                    </form>
-                  ) : (
-                    <>
-                      <span>
-                        <strong>Relationship:</strong> {rel?.rel_type || 'N/A'} &nbsp;|&nbsp;
-                        <strong>Event Type:</strong> {ev.event_type} &nbsp;|&nbsp;
-                        <strong>Date:</strong> {ev.event_date?.slice(0,10)} &nbsp;|&nbsp;
-                        <em>{ev.event_desc||''}</em>
-                      </span>{' '}
-                      <button onClick={()=>startEditEvt(ev)} className="button">Edit</button>{' '}
-                      <button onClick={()=>deleteEvt(ev.rel_event_id)} className="button">Delete</button>
-                    </>
-                  )}
-                  <hr style={{ margin:'0.5em 0' }}/>
-                </li>
-              )
-            })}
-          </ul>
-        )}
+                        <select
+                          name="relationship_id"
+                          value={ev.relationship_id}
+                          onChange={handleChangeNewEvt}
+                          required
+                        >
+                          <option value="">— Select relationship —</option>
+                          {relationships.map(r => (
+                            <option key={r.relationship_id} value={r.relationship_id}>
+                              {r.rel_type}
+                            </option>
+                          ))}
+                        </select>
+                        <input
+                          name="event_type"
+                          value={editEvt.event_type}
+                          onChange={handleChangeEditEvt}
+                        />
+                        <input
+                          name="event_desc"
+                          value={editEvt.event_desc}
+                          onChange={handleChangeEditEvt}
+                        />
+                        <input
+                          name="event_date"
+                          type="date"
+                          value={editEvt.event_date}
+                          onChange={handleChangeEditEvt}
+                        />
+                        <button type="submit" className="button">Save</button>
+                        <button type="button" onClick={cancelEditEvt} className="button">Cancel</button>
+                      </form>
+                    ) : (
+                      <>
+                        <span style={{ whiteSpace: 'nowrap', display: 'block', overflowX: 'auto' }}>
+                          <strong>Relationship:</strong> {rel?.rel_type || 'N/A'} &nbsp;|&nbsp;
+                          <strong>Event Type:</strong> {ev.event_type} &nbsp;|&nbsp;
+                          <strong>Date:</strong> {ev.event_date?.slice(0,10)} &nbsp;|&nbsp;
+                          <em>{ev.event_desc||''}</em>
+                        </span>{' '}
+                        <button onClick={()=>startEditEvt(ev)} className="button">Edit</button>{' '}
+                        <button onClick={()=>deleteEvt(ev.rel_event_id)} className="button">Delete</button>
+                      </>
+                    )}
+                    <hr style={{ margin:'0.5em 0' }}/>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </div>
       </section>
     </div>
   )

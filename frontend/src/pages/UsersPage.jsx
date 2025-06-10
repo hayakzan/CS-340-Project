@@ -107,7 +107,7 @@ export default function UsersPage() {
           <option value="Male">Male</option>
           <option value="Other">Other</option>
         </select>
-        <button type="submit" className="button">
+        <button type="submit" className="button" style={{ marginLeft: '0.5em' }}>
           Add User
         </button>
       </form>
@@ -130,6 +130,48 @@ export default function UsersPage() {
           </li>
         ))}
       </ul>
+
+      <div style={{ marginTop: '2em', textAlign: 'center' }}>
+        <button
+          className="button"
+          style={{
+            background: '#27ae60',
+            color: '#fff',
+            borderRadius: '8px',
+            padding: '0.75em 2em',
+            fontWeight: 500,
+            fontSize: '1em',
+            border: 'none',
+            marginTop: '1em',
+            boxShadow: '0 1px 2px #0002',
+            cursor: 'pointer',
+          }}
+          onClick={async (e) => {
+            e.preventDefault();
+            // Custom confirm dialog
+            const modal = document.createElement('dialog');
+            modal.style.padding = '2em';
+            modal.style.borderRadius = '12px';
+            modal.innerHTML = `
+              <div style="font-size:1.2em;margin-bottom:1.2em">Surely you can't be serious.</div>
+              <form method="dialog" style="display:flex;gap:1em;justify-content:center">
+                <button value="cancel" style="padding:0.5em 1.5em;border-radius:8px;background:#ddd;border:none;font-weight:500;font-size:1em">Cancel</button>
+                <button value="go" style="padding:0.5em 1.5em;border-radius:8px;background:#2ecc71;color:#fff;border:none;font-weight:500;font-size:1em">I am serious, and don't call me Shirley</button>
+              </form>
+            `;
+            document.body.appendChild(modal);
+            modal.showModal();
+            modal.addEventListener('close', () => {
+              if (modal.returnValue === 'go') {
+                window.location.href = 'http://classwork.engr.oregonstate.edu:4003/';
+              }
+              document.body.removeChild(modal);
+            });
+          }}
+        >
+          I want to go back to Mario
+        </button>
+      </div>
     </div>
   );
 }

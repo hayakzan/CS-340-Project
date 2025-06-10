@@ -167,7 +167,7 @@ END //
 
 -- RELATIONSHIP TAGS (Assign/Delete)
 DROP PROCEDURE IF EXISTS AssignRelationshipTag;
-DROP PROCEDURE IF EXISTS DeleteRelationshipTag;
+DROP PROCEDURE IF EXISTS RemoveRelationshipTag;
 
 CREATE PROCEDURE AssignRelationshipTag(
   IN p_relationship_id INT,
@@ -178,7 +178,7 @@ BEGIN
   VALUES (p_relationship_id, p_tag_id);
 END //
 
-CREATE PROCEDURE DeleteRelationshipTag(
+CREATE PROCEDURE RemoveRelationshipTag(
   IN p_relationship_id INT,
   IN p_tag_id          INT
 )

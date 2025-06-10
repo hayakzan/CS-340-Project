@@ -1,7 +1,3 @@
--- PL.SQL – Project Step 6
--- Group 27: Hunter Havice and Yigit Kolat
--- Procedures: Users, People, Relationships, Events, Relationship Tags
-
 -- USERS
 DROP PROCEDURE IF EXISTS CreateUser;
 DROP PROCEDURE IF EXISTS UpdateUser;
@@ -131,75 +127,11 @@ BEGIN
    WHERE relationship_id = p_relationship_id;
 END //
 
--- EVENTS
-DROP PROCEDURE IF EXISTS CreateEvent;
-DROP PROCEDURE IF EXISTS UpdateEvent;
-DROP PROCEDURE IF EXISTS DeleteEvent;
-
-CREATE PROCEDURE CreateEvent(
-  IN p_relationship_id INT,
-  IN p_event_type      VARCHAR(255),
-  IN p_event_desc      TEXT,
-  IN p_event_date      DATE
-)
-BEGIN
-  INSERT INTO relationship_events (relationship_id, event_type, event_desc, event_date)
-  VALUES (p_relationship_id, p_event_type, p_event_desc, p_event_date);
-END //
-
-CREATE PROCEDURE UpdateEvent(
-  IN p_rel_event_id    INT,
-  IN p_event_type      VARCHAR(255),
-  IN p_event_desc      TEXT,
-  IN p_event_date      DATE
-)
-BEGIN
-  UPDATE relationship_events
-     SET event_type = p_event_type,
-         event_desc = p_event_desc,
-         event_date = p_event_date
-   WHERE rel_event_id = p_rel_event_id;
-END //
-
-CREATE PROCEDURE DeleteEvent(
-  IN p_rel_event_id INT
-)
-BEGIN
-  DELETE FROM relationship_events
-   WHERE rel_event_id = p_rel_event_id;
-END //
-
--- RELATIONSHIP TAGS (Assign/Delete)
-DROP PROCEDURE IF EXISTS AssignRelationshipTag;
-DROP PROCEDURE IF EXISTS DeleteRelationshipTag;
-
-DELIMITER //
-CREATE PROCEDURE AssignRelationshipTag(
-  IN p_relationship_id INT,
-  IN p_tag_id          INT
-)
-BEGIN
-  INSERT INTO relationship_tags (relationship_id, tag_id)
-  VALUES (p_relationship_id, p_tag_id);
-END //
-
-CREATE PROCEDURE DeleteRelationshipTag(
-  IN p_relationship_id INT,
-  IN p_tag_id          INT
-)
-BEGIN
-  DELETE FROM relationship_tags
-   WHERE relationship_id = p_relationship_id
-     AND tag_id = p_tag_id;
-END //
-DELIMITER ;
-
 -- RELATIONSHIP EVENTS (Create/Update/Delete)
 DROP PROCEDURE IF EXISTS CreateRelationshipEvent;
 DROP PROCEDURE IF EXISTS UpdateRelationshipEvent;
 DROP PROCEDURE IF EXISTS DeleteRelationshipEvent;
 
-DELIMITER //
 CREATE PROCEDURE CreateRelationshipEvent(
   IN p_relationship_id INT,
   IN p_event_type      VARCHAR(100),
@@ -231,5 +163,28 @@ CREATE PROCEDURE DeleteRelationshipEvent(
 BEGIN
   DELETE FROM relationship_events
    WHERE rel_event_id = p_rel_event_id;
+END //
+
+-- RELATIONSHIP TAGS (Assign/Delete)
+DROP PROCEDURE IF EXISTS AssignRelationshipTag;
+DROP PROCEDURE IF EXISTS DeleteRelationshipTag;
+
+CREATE PROCEDURE AssignRelationshipTag(
+  IN p_relationship_id INT,
+  IN p_tag_id          INT
+)
+BEGIN
+  INSERT INTO relationship_tags (relationship_id, tag_id)
+  VALUES (p_relationship_id, p_tag_id);
+END //
+
+CREATE PROCEDURE DeleteRelationshipTag(
+  IN p_relationship_id INT,
+  IN p_tag_id          INT
+)
+BEGIN
+  DELETE FROM relationship_tags
+   WHERE relationship_id = p_relationship_id
+     AND tag_id = p_tag_id;
 END //
 DELIMITER ;

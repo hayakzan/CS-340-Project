@@ -11,7 +11,7 @@ router.post('/', async (req, res) => {
       `CALL CreateRelationship(?, ?, ?, ?, ?, ?)`,
       [person_id, rel_type, status, started_at || null, ended_at || null, notes || null]
     );
-    // MySQL stored procedure insertId is usually at result[0][0].insertId or result[0].insertId
+
     const insertId = result[0]?.insertId || result[0]?.[0]?.insertId;
     res.status(201).json({ relationship_id: insertId });
   } catch (err) {
@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// READ all (or by person_id) — UNCHANGED
+// READ all (or by person_id)
 router.get('/', async (req, res) => {
   try {
     const { person_id } = req.query;

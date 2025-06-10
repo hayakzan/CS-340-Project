@@ -259,7 +259,7 @@ export default function PersonDetailsPage() {
             : (
               <ul style={{ paddingLeft:0, listStyle:'none' }}>
                 {relationships.map(r => (
-                  <li key={r.relationship_id} style={{ marginBottom:'0.5em' }}>
+                  <li key={r.relationship_id} style={{ marginBottom:'1.5em' }}>
                     {editRelId === r.relationship_id ? (
                       <form
                         onSubmit={submitEditRel}
@@ -313,12 +313,13 @@ export default function PersonDetailsPage() {
                           <strong>Status:</strong> {r.status} &nbsp;|&nbsp;
                           <strong>Since:</strong> {r.started_at?.slice(0,10)||'N/A'} &nbsp;|&nbsp;
                           <em>{r.notes||''}</em>
-                        </span>{' '}
-                        <button onClick={()=>startEditRel(r)} className="button">Edit</button>{' '}
+                        </span>
+                        <div style={{ height: 10 }}></div>
+                        <button onClick={()=>startEditRel(r)} className="button" style={{ marginRight: 8 }}>Edit</button>
                         <button onClick={()=>deleteRel(r.relationship_id)} className="button">Delete</button>
                       </>
                     )}
-                    <hr style={{ margin:'0.5em 0' }}/>
+                    {/* <hr style={{ margin:'0.5em 0' }}/> */}
                   </li>
                 ))}
               </ul>
@@ -389,7 +390,7 @@ export default function PersonDetailsPage() {
               {events.map(ev => {
                 const rel = relationships.find(r => r.relationship_id === ev.relationship_id)
                 return (
-                  <li key={ev.rel_event_id} style={{ marginBottom:'0.5em' }}>
+                  <li key={ev.rel_event_id} style={{ marginBottom:'1.5em' }}>
                     {editEvtId === ev.rel_event_id ? (
                       <form
                         onSubmit={submitEditEvt}
@@ -434,12 +435,13 @@ export default function PersonDetailsPage() {
                           <strong>Event Type:</strong> {ev.event_type} &nbsp;|&nbsp;
                           <strong>Date:</strong> {ev.event_date?.slice(0,10)} &nbsp;|&nbsp;
                           <em>{ev.event_desc||''}</em>
-                        </span>{' '}
-                        <button onClick={()=>startEditEvt(ev)} className="button">Edit</button>{' '}
+                        </span>
+                        <div style={{ height: 10 }}></div>
+                        <button onClick={()=>startEditEvt(ev)} className="button" style={{ marginRight: 8 }}>Edit</button>
                         <button onClick={()=>deleteEvt(ev.rel_event_id)} className="button">Delete</button>
                       </>
                     )}
-                    <hr style={{ margin:'0.5em 0' }}/>
+                    {/* <hr style={{ margin:'0.5em 0' }}/> */}
                   </li>
                 )
               })}

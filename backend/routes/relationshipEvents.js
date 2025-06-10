@@ -11,7 +11,6 @@ router.post('/', async (req, res) => {
       `CALL CreateRelationshipEvent(?, ?, ?, ?)`,
       [relationship_id, event_type, event_desc || null, event_date]
     );
-    // MySQL stored procedure insertId is usually at result[0][0].insertId, but sometimes just result[0].insertId
     const insertId = result[0]?.insertId || result[0]?.[0]?.insertId;
     res.status(201).json({ rel_event_id: insertId });
   } catch (err) {

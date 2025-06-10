@@ -1,13 +1,13 @@
 -- PL.SQL – Project Step 6
 -- Group 27: Hunter Havice and Yigit Kolat
--- Contains all C-U-D stored procedures for the users table
+-- Procedures: Users, People, Relationships, Events, Relationship Tags
 
+-- USERS
 DROP PROCEDURE IF EXISTS CreateUser;
 DROP PROCEDURE IF EXISTS UpdateUser;
 DROP PROCEDURE IF EXISTS DeleteUser;
 
 DELIMITER //
-
 CREATE PROCEDURE CreateUser(
   IN p_name      VARCHAR(255),
   IN p_username  VARCHAR(255),
@@ -41,6 +41,155 @@ CREATE PROCEDURE DeleteUser(
 BEGIN
   DELETE FROM users
    WHERE user_id = p_user_id;
+END //
+
+-- PEOPLE
+DROP PROCEDURE IF EXISTS CreatePerson;
+DROP PROCEDURE IF EXISTS UpdatePerson;
+DROP PROCEDURE IF EXISTS DeletePerson;
+
+CREATE PROCEDURE CreatePerson(
+  IN p_user_id   INT,
+  IN p_name      VARCHAR(255),
+  IN p_phone     VARCHAR(50),
+  IN p_email     VARCHAR(255),
+  IN p_dob       DATE,
+  IN p_gender    VARCHAR(50)
+)
+BEGIN
+  INSERT INTO people (user_id, name, phone, email, dob, gender)
+  VALUES (p_user_id, p_name, p_phone, p_email, p_dob, p_gender);
+END //
+
+CREATE PROCEDURE UpdatePerson(
+  IN p_person_id INT,
+  IN p_name      VARCHAR(255),
+  IN p_phone     VARCHAR(50),
+  IN p_email     VARCHAR(255),
+  IN p_dob       DATE,
+  IN p_gender    VARCHAR(50)
+)
+BEGIN
+  UPDATE people
+     SET name  = p_name,
+         phone = p_phone,
+         email = p_email,
+         dob   = p_dob,
+         gender= p_gender
+   WHERE person_id = p_person_id;
+END //
+
+CREATE PROCEDURE DeletePerson(
+  IN p_person_id INT
+)
+BEGIN
+  DELETE FROM people
+   WHERE person_id = p_person_id;
+END //
+
+-- RELATIONSHIPS
+DROP PROCEDURE IF EXISTS CreateRelationship;
+DROP PROCEDURE IF EXISTS UpdateRelationship;
+DROP PROCEDURE IF EXISTS DeleteRelationship;
+
+CREATE PROCEDURE CreateRelationship(
+  IN p_person_id INT,
+  IN p_rel_type  VARCHAR(255),
+  IN p_status    VARCHAR(50),
+  IN p_started_at DATE,
+  IN p_ended_at  DATE,
+  IN p_notes     TEXT
+)
+BEGIN
+  INSERT INTO relationships (person_id, rel_type, status, started_at, ended_at, notes)
+  VALUES (p_person_id, p_rel_type, p_status, p_started_at, p_ended_at, p_notes);
+END //
+
+CREATE PROCEDURE UpdateRelationship(
+  IN p_relationship_id INT,
+  IN p_rel_type        VARCHAR(255),
+  IN p_status          VARCHAR(50),
+  IN p_started_at      DATE,
+  IN p_ended_at        DATE,
+  IN p_notes           TEXT
+)
+BEGIN
+  UPDATE relationships
+     SET rel_type   = p_rel_type,
+         status     = p_status,
+         started_at = p_started_at,
+         ended_at   = p_ended_at,
+         notes      = p_notes
+   WHERE relationship_id = p_relationship_id;
+END //
+
+CREATE PROCEDURE DeleteRelationship(
+  IN p_relationship_id INT
+)
+BEGIN
+  DELETE FROM relationships
+   WHERE relationship_id = p_relationship_id;
+END //
+
+-- EVENTS
+DROP PROCEDURE IF EXISTS CreateEvent;
+DROP PROCEDURE IF EXISTS UpdateEvent;
+DROP PROCEDURE IF EXISTS DeleteEvent;
+
+CREATE PROCEDURE CreateEvent(
+  IN p_relationship_id INT,
+  IN p_event_type      VARCHAR(255),
+  IN p_event_desc      TEXT,
+  IN p_event_date      DATE
+)
+BEGIN
+  INSERT INTO events (relationship_id, event_type, event_desc, event_date)
+  VALUES (p_relationship_id, p_event_type, p_event_desc, p_event_date);
+END //
+
+CREATE PROCEDURE UpdateEvent(
+  IN p_rel_event_id    INT,
+  IN p_event_type      VARCHAR(255),
+  IN p_event_desc      TEXT,
+  IN p_event_date      DATE
+)
+BEGIN
+  UPDATE events
+     SET event_type = p_event_type,
+         event_desc = p_event_desc,
+         event_date = p_event_date
+   WHERE rel_event_id = p_rel_event_id;
+END //
+
+CREATE PROCEDURE DeleteEvent(
+  IN p_rel_event_id INT
+)
+BEGIN
+  DELETE FROM events
+   WHERE rel_event_id = p_rel_event_id;
+END //
+
+-- RELATIONSHIP TAGS
+DROP PROCEDURE IF EXISTS CreateRelationshipTag;
+DROP PROCEDURE IF EXISTS DeleteRelationshipTag;
+
+CREATE PROCEDURE CreateRelationshipTag(
+  IN p_relationship_id INT,
+  IN p_tag_id          INT
+)
+BEGIN
+  INSERT INTO relationship_tags (relationship_id, tag_id)
+  VALUES (p_relationship_id, p_tag_id);
+END //
+
+CREATE PROCEDURE DeleteRelationshipTag(
+  IN p_relationship_id INT,
+  IN p_tag_id          INT
+)
+BEGIN
+  DELETE FROM relationship_tags
+   WHERE relationship_id = p_relationship_id
+     AND tag_id = p_tag_id;
 END //
 
 DELIMITER ;

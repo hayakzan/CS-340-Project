@@ -16,6 +16,9 @@ export default function PersonFormPage() {
     gender: ''
   })
 
+  // Track fetched person object for name in header
+  const [person, setPerson] = useState({})
+
   // load when editing
   useEffect(() => {
     if (!personId) return
@@ -29,6 +32,7 @@ export default function PersonFormPage() {
           dob:    data.dob    ? data.dob.split('T')[0] : '',
           gender: data.gender || ''
         })
+        setPerson(data) // Save for name in heading
       })
       .catch(console.error)
   }, [BASE, personId])
@@ -67,7 +71,11 @@ export default function PersonFormPage() {
       </button>
 
       <h2 style={{ margin:'0 0 1em 0' }}>
-        {personId ? `Edit Person #${personId}` : `Add New Person for User ${userId}`}
+        {personId
+          ? person.name
+            ? `Edit ${person.name}`
+            : 'Edit Person'
+          : `Add New Person for User ${userId}`}
       </h2>
 
       <form
@@ -128,7 +136,6 @@ export default function PersonFormPage() {
           <option value="Other">Other</option>
         </select>
 
-        {/* placeholder to push button into right column */}
         <div/>
 
         <button

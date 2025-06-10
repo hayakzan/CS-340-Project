@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db-connector');
 
-// CREATE a new tag (now using procedure)
+// CREATE a new tag 
 router.post('/', async (req, res) => {
   const { user_id, name, color } = req.body;
   try {
@@ -15,7 +15,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// READ all tags (still just a query)
+// READ all tags
 router.get('/', async (req, res) => {
   try {
     const { user_id } = req.query;
@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// UPDATE a tag (now using procedure)
+// UPDATE a tag 
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { name, color } = req.body;
@@ -44,7 +44,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE a tag (now using procedure)
+// DELETE a tag
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {

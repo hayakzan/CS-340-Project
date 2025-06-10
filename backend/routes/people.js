@@ -13,7 +13,8 @@ router.post('/', async (req, res) => {
       `CALL CreatePerson(?, ?, ?, ?, ?, ?)`,
       [user_id, name, phone, email, dob, gender]
     );
-    
+    // MySQL returns insertId in a different structure when using procedures
+    // Usually it's result[0][0].insertId or similar; check your actual result!
     const insertId = result[0]?.insertId || result[0]?.[0]?.insertId;
     res.status(201).json({ people_id: insertId });
   } catch (err) {
@@ -66,7 +67,8 @@ router.put('/:id', async (req, res) => {
       `CALL UpdatePerson(?, ?, ?, ?, ?, ?)`,
       [ id, name, phone, email, dob, gender ]
     );
-    
+    // MySQL returns result as array of arrays for procedures; check affectedRows if needed
+    // You may want to do a follow-up SELECT if you want to be sure the row exists
     res.sendStatus(204);
   } catch (err) {
     console.error(err);

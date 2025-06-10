@@ -28,7 +28,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// — CREATE a new user via stored proc CreateUser(...) —
+// — CREATE a new user
 router.post('/', async (req, res) => {
   const { name, username, dob, gender } = req.body;
   try {
@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// — UPDATE an existing user via stored proc UpdateUser(...) —
+// — UPDATE an existing user
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { name, username, dob, gender } = req.body;
@@ -64,7 +64,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// — DELETE a user via stored proc DeleteUser(...) —
+// — DELETE a user 
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {

@@ -1,3 +1,7 @@
+-- PL.SQL – Project Step 6
+-- Group 27: Hunter Havice and Yigit Kolat
+-- Contains all C-U-D stored procedures for ALL tables
+
 -- USERS
 DROP PROCEDURE IF EXISTS CreateUser;
 DROP PROCEDURE IF EXISTS UpdateUser;
